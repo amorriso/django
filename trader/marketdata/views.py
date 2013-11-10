@@ -32,6 +32,7 @@ def detail(request, future):
     try:
         futures = Future.objects.all()
         future = [i for i in futures if i.name == future][0]
+
     except:
         raise Http404
 

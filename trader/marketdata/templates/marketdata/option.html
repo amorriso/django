@@ -6,6 +6,22 @@
 var marketdata;
 $(document).ready(function () {
         $('#marketdata').highcharts({
+
+        chart: {
+                animation: Highcharts.svg, // don't animate in old IE
+                marginRight: 10,
+                events: {
+                        load: function() {
+                            // set up the updating of the chart each second
+                            var series = this.series[0];
+                            setInterval(function() {
+                                series.setData(getData(), true);
+                            }, 1000);
+                        }
+                    }
+                },
+
+
             exporting: {
                 buttons : {
                     contextButtons: {
@@ -56,6 +72,12 @@ $(document).ready(function () {
                 data: {{values}}
             }]
         });
+
+    function getData() {
+        var retvalue = {{ asks }};
+        // ajax goes here
+        return retvalue;
+    }
     });
 $(function () {
         $('#frozen-marketdata').highcharts({

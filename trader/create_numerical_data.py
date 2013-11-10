@@ -4,6 +4,7 @@ import copy
 import scipy
 import string
 import helper_functions as hf
+import time
 
 
 class DataError(Exception):
@@ -352,14 +353,18 @@ class Option(object):
         self._update_Future_value()
         self._update_optioncontract_strikes()
 
-        for strike, info in self._optioncontract_dict.items():
+        atm_strike = self._return_ATM_strike()
+
+        strike_info = sorted(self._optioncontract_dict.items(), key=lambda x:x[0])
+
+        for strike, info in strike_info:
 
             dateandtimenow = datetime.datetime.now()
 
-            info['bid'] = 1.0
-            info['ask'] = 2.0
-            info['value'] = 1.5
-            info['vol'] = 0.05
+            info['bid'] = (strike - atm_strike)**2 - 5 + scipy.random.randn(1)[0] * 2
+            info['ask'] = (strike - atm_strike)**2 + 5 + scipy.random.randn(1)[0] * 2
+            info['value'] = (info['bid'] + info['ask'] ) / 2
+            info['vol'] = (strike - atm_strike)**2
             info['last_updated'] = dateandtimenow
             info['time_to_expiry'] = hf.diff_dates_year_fraction(
                     hf.sqldate2datetime(info['expiry_date']), dateandtimenow
@@ -405,3 +410,12 @@ option_obj3 = Option(db, 'marketdata_future', 'marketdata_optiondefinition', 'ma
 option_obj.get_and_add_values()
 option_obj2.get_and_add_values()
 option_obj3.get_and_add_values()
+
+while True:
+    time.sleep(1)
+    print 'get and add ...'
+    future_obj.get_and_add_values()
+    option_obj.get_and_add_values()
+    option_obj2.get_and_add_values()
+    option_obj3.get_and_add_values()
+
