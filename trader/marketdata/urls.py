@@ -8,7 +8,9 @@ urlpatterns = patterns('',
     # /marketdata/FUTURENAME
     url(r'^(?P<future>\w+)/$', views.detail, name='detail'),
     # /marketdata/option/OPTIONNAME
-    url(r'^option/(?P<option_name>\w+)/$', views.option, name='option')
+    url(r'^option/(?P<option_name>\w+)/$', views.option, name='option'),
+    # /marketdata/option/OPTIONNAME/refresh (ajax)
+    url(r'^option/refresh/(?P<option_name>\w+)/$', views.refresh_option, name='refresh_option')
 )
 
 

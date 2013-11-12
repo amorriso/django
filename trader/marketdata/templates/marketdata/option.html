@@ -5,6 +5,27 @@
 {% block content %}  
 var marketdata;
 $(document).ready(function () {
+
+        function getDataOld(option_name) {
+            var retvalue = {{ asks }};
+            // ajax goes here
+            return retvalue;
+        }
+        function getData(option_name) {
+            var result = null;
+            $.ajax({
+                url: "/marketdata/option/refresh/{{option.name}}/",
+                data: {option_name: "{{option.name}}"},
+                type: 'POST',
+                dataType: "json",
+                success: function(data) {
+                    result = data;
+                }
+            });
+            return result[0];
+        }
+
+
         $('#marketdata').highcharts({
 
         chart: {
@@ -73,11 +94,6 @@ $(document).ready(function () {
             }]
         });
 
-    function getData() {
-        var retvalue = {{ asks }};
-        // ajax goes here
-        return retvalue;
-    }
     });
 $(function () {
         $('#frozen-marketdata').highcharts({

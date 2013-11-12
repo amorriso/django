@@ -1,8 +1,10 @@
 # Create your views here.
 from django.http import HttpResponse, Http404
 from django.template import RequestContext, loader
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
+from django.views.decorators.csrf import csrf_exempt
 import datetime
+import json
 import helper_functions as hf
 
 from marketdata.models import *
@@ -38,6 +40,44 @@ def detail(request, future):
 
     return render(request, 'marketdata/detail.html', {'future': future})
 
+@csrf_exempt
+def refresh_option(request, option_name):
+    
+    try:
+        print " ------------------------------------------------------------------------------ "
+        print request.POST
+        print " ------------------------------------------------------------------------------ "
+        print request.is_ajax()
+        print " ------------------------------------------------------------------------------ "
+        
+        if request.is_ajax() and request.POST:
+            option_name = request.POST['option_name']
+            options = OptionDefinition.objects.all()
+            option = [o for o in options if o.name == option_name][0]
+            optioncontracts = sorted(
+                OptionContract.objects.filter(optiondefinition_id=option.id), 
+                key = lambda x : x.strike)
+    
+            strikes = [o.strike for o in optioncontracts]
+            bids = [o.bid for o in optioncontracts]
+            asks = [o.ask for o in optioncontracts]
+            values = [o.value for o in optioncontracts]
+
+            return HttpResponse(json.dumps({
+                                            'option': option.name, 
+                                            'strikes' : strikes,
+                                            'bids' : bids,
+                                            'asks' : asks,
+                                            'values' : values
+                                            }), mimetype="application/json" )
+        else:
+            raise Http404
+
+    except:
+        raise Http404
+
+    
+    
 def option(request, option_name):
 
     try:
