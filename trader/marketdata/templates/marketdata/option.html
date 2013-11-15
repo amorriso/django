@@ -15,18 +15,11 @@ function getData(option_name) {
         data: {option_name: "{{option.name}}"},
         type: 'POST',
         dataType: "json",
-//        success: function(data) {
-//            result = data.bids;
-//        }
         success: function(data) {
-					var series = chart.series[0],
-						shift = series.data.length > 20; // shift if the series is longer than 20
-		
-					// add the point
-					chart.series[0].addPoint(eval(point), true, shift);
-					
-					// call it again after one second
-					setTimeout(getData, 1000);	
+            live_chart.series[0].setData(data.bids, true);
+            live_chart.series[1].setData(data.asks, true);
+            live_chart.series[2].setData(data.values, true);
+            setTimeout(getData, 1000);
 		},
 		cache: false
     });
@@ -34,7 +27,7 @@ function getData(option_name) {
 
 $(document).ready(function () {
 
-    chart = new Highcharts.Chart({
+    live_chart = new Highcharts.Chart({
             chart: {
 				renderTo: 'marketdata',
                 animation: Highcharts.svg, // don't animate in old IE
@@ -42,17 +35,7 @@ $(document).ready(function () {
                 events: {
 						load: getData
 					    }
-//                events: {
-//                        load: function() {
-//                            // set up the updating of the chart each second
-//                            var series = this.series[0];
-//                            setInterval(function() {
-//                                series.setData(getData(), true);
-//                            }, 1000);
-//                        }
-//                    }
                 },
-
 
             exporting: {
                 buttons : {
@@ -107,7 +90,7 @@ $(document).ready(function () {
 
     });
 $(function () {
-    chart = new Highcharts.Chart({
+    frozen_chart = new Highcharts.Chart({
             chart: {
 				renderTo: 'frozen-marketdata'
                    },
@@ -203,10 +186,15 @@ $(function () {
                 </h1>
             </div>
         </div>
-        <div class="row">    
-            <div class="span4">
-                <div id="marketdata" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-            </div>
+        <div class="container">
+            <div class="row">    
+                <div class="span7 pull-left">
+                    <div id="marketdata" style="max-width: 310px; height: 400px; margin: 0 auto"></div>
+                </div>
+                <div class="span4 offset8">
+                    <button type="button" class="btn btn-lg btn-success">Success</button>
+                </div>
+            <div>
         </div>    
     </div>
     <div class="row">
@@ -218,9 +206,12 @@ $(function () {
             </div>
         </div>
         <div class="row">    
-            <div class="span4">
-                <div id="frozen-marketdata" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+            <div class="container span7 pull-left">
+                <div id="frozen-marketdata" style="max-width: 310px; height: 400px; margin: 0 auto"></div>
             </div>
+            <div class="container span4 offset1">
+                <button type="button" class="btn btn-lg btn-danger">Danger</button>
+            <div>
         </div>    
     </div>
 </div>
