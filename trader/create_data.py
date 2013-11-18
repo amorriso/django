@@ -16,17 +16,17 @@ if len(option_contracts) > 0:
 
 future = Future(name = 'BUNDMAR14', bloomberg_id = 'BLOOMBERG_BUNDMAR14', easyscreen_id = 'EBF:FGBL Mar 13',
         bid = 140.0, bid_volume = 2, ask = 140.0, ask_volume = 2, value = 140.0, last_trade_value = 140.0, 
-        last_trade_time = datetime.datetime(2014, 06, 01, 0, 0, 0),
+        last_trade_time = datetime.datetime(2014, 06, 01, 0, 0, 0), last_trade_volume = 2,
         month_tag = 'MAR14', expiry_date = datetime.datetime(2014,03,01,0,0,0))
 
 future2 = Future(name = 'BUNDJUN14', bloomberg_id = 'BLOOMBERG_BUNDJUN14', easyscreen_id = 'EBF:FGBL Jun 13',
         bid = 140.0, bid_volume = 2, ask = 140.0, ask_volume = 2, value = 160.0, last_trade_value = 140.0, 
-        last_trade_time = datetime.datetime(2014, 06, 01, 0, 0, 0), 
+        last_trade_time = datetime.datetime(2014, 06, 01, 0, 0, 0), last_trade_volume = 2, 
         month_tag = 'JUN14', expiry_date = datetime.datetime(2014,06,01,0,0,0))
 
 future3 = Future(name = 'BUBBLEJUN14', bloomberg_id = 'BLOOMBERG_BUBBLEJUN14', easyscreen_id = 'EBF:FGBL Dec 13',
         bid = 140.0, bid_volume = 2, ask = 140.0, ask_volume = 2, value = 180.0, last_trade_value = 140.0, 
-        last_trade_time = datetime.datetime(2014, 06, 01, 0, 0, 0),
+        last_trade_time = datetime.datetime(2014, 06, 01, 0, 0, 0), last_trade_volume = 2,
         month_tag = 'JUN14', expiry_date = datetime.datetime(2014,06,01,0,0,0))
 
 future.save()
@@ -43,29 +43,29 @@ future3 = Future.objects.get(pk=3)
 
 ###############################################################################
 optiondefs = [
-        ('BUND_OPT_JAN', 'BLOOM_BUND_OPT_JAN', 'JAN14', datetime.date(2014,1,1)), 
-        ('BUND_OPT_FEB', 'BLOOM_BUND_OPT_FEB', 'FEB14', datetime.date(2014,2,1)),
-        ('BUND_OPT_MAR', 'BLOOM_BUND_OPT_MAR', 'MAR14', datetime.date(2014,3,1))
+        ('BUND_OPT_JAN', 'BLOOM_BUND_OPT_JAN', 'JAN14', datetime.date(2014,1,1), 'ES_BUND_OPT_JAN14'), 
+        ('BUND_OPT_FEB', 'BLOOM_BUND_OPT_FEB', 'FEB14', datetime.date(2014,2,1), 'ES_BUND_OPT_FEB14'),
+        ('BUND_OPT_MAR', 'BLOOM_BUND_OPT_MAR', 'MAR14', datetime.date(2014,3,1), 'ES_BUND_OPT_MAR14')
              ]
 
 for optiondef in optiondefs:
-    future.optiondefinition_set.create(name = optiondef[0], bloomberg_prefix = optiondef[1], month_tag = optiondef[2], expiry_date = optiondef[3], strike_interval = 0.5)
+    future.optiondefinition_set.create(name = optiondef[0], bloomberg_prefix = optiondef[1], month_tag = optiondef[2], expiry_date = optiondef[3], strike_interval = 0.5, easyscreen_prefix = optiondef[4])
 ###############################################################################
 optiondefs = [
-        ('BUND_OPT_APR', 'BLOOM_BUND_OPT_APR', 'APR14', datetime.date(2014,1,1)), 
-        ('BUND_OPT_MAY', 'BLOOM_BUND_OPT_MAY', 'MAY14', datetime.date(2014,2,1)),
-        ('BUND_OPT_JUN', 'BLOOM_BUND_OPT_JUN', 'JUN14', datetime.date(2014,3,1))
+        ('BUND_OPT_APR', 'BLOOM_BUND_OPT_APR', 'APR14', datetime.date(2014,1,1), 'ES_BUND_OPT_APR14'), 
+        ('BUND_OPT_MAY', 'BLOOM_BUND_OPT_MAY', 'MAY14', datetime.date(2014,2,1), 'ES_BUND_OPT_MAY14'),
+        ('BUND_OPT_JUN', 'BLOOM_BUND_OPT_JUN', 'JUN14', datetime.date(2014,3,1), 'ES_BUND_OPT_JUN14')
              ]
 
 for optiondef in optiondefs:
-    future2.optiondefinition_set.create(name = optiondef[0], bloomberg_prefix = optiondef[1], month_tag = optiondef[2], expiry_date = optiondef[3], strike_interval = 0.5)
+    future2.optiondefinition_set.create(name = optiondef[0], bloomberg_prefix = optiondef[1], month_tag = optiondef[2], expiry_date = optiondef[3], strike_interval = 0.5, easyscreen_prefix = optiondef[4])
 ###############################################################################
 optiondefs = [
-        ('BUBBLE_OPT_APR', 'BLOOM_BUBBLE_OPT_APR', 'APR14', datetime.date(2014,1,1)), 
-        ('BUBBLE_OPT_MAY', 'BLOOM_BUBBLE_OPT_MAY', 'MAY14', datetime.date(2014,2,1)),
-        ('BUBBLE_OPT_JUN', 'BLOOM_BUBBLE_OPT_JUN', 'JUN14', datetime.date(2014,3,1))
+        ('BOBL_OPT_APR', 'BLOOM_BOBL_OPT_APR', 'APR14', datetime.date(2014,1,1), 'ES_BOBL_OPT_APR14'), 
+        ('BOBL_OPT_MAY', 'BLOOM_BOBL_OPT_MAY', 'MAY14', datetime.date(2014,2,1), 'ES_BOBL_OPT_MAY14'),
+        ('BOBL_OPT_JUN', 'BLOOM_BOBL_OPT_JUN', 'JUN14', datetime.date(2014,3,1), 'ES_BOBL_OPT_JUN14')
              ]
 
 for optiondef in optiondefs:
-    future3.optiondefinition_set.create(name = optiondef[0], bloomberg_prefix = optiondef[1], month_tag = optiondef[2], expiry_date = optiondef[3], strike_interval = 0.5)
+    future3.optiondefinition_set.create(name = optiondef[0], bloomberg_prefix = optiondef[1], month_tag = optiondef[2], expiry_date = optiondef[3], strike_interval = 0.5, easyscreen_prefix = optiondef[4])
 ###############################################################################

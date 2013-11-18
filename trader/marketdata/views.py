@@ -62,18 +62,32 @@ def refresh_option(request, option_name):
             bids = [o.bid for o in optioncontracts]
             asks = [o.ask for o in optioncontracts]
             values = [o.value for o in optioncontracts]
+            bid_volume = [o.bid_volume for o in optioncontracts]
+            ask_volume = [o.ask_volume for o in optioncontracts]
+            last_trade_value = [o.last_trade_value for o in optioncontracts]
+            last_trade_volume = [o.last_trade_volume for o in optioncontracts]
+            last_trade_time = [o.last_trade_time.isoformat() for o in optioncontracts]
+            last_updated = [o.last_updated.isoformat() for o in optioncontracts]
 
             return HttpResponse(json.dumps({
                                             'option': option.name, 
                                             'strikes' : strikes,
                                             'bids' : bids,
                                             'asks' : asks,
-                                            'values' : values
+                                            'values' : values,
+                                            'bid_volume' : bid_volume,
+                                            'ask_volume' : ask_volume,
+                                            'last_trade_value' : last_trade_value,
+                                            'last_trade_volume' : last_trade_volume,
+                                            'last_trade_time' : last_trade_time,
+                                            'last_updated' : last_updated,
                                             }), mimetype="application/json" )
         else:
+            print "else raise"
             raise Http404
 
     except:
+        print "except raise"
         raise Http404
 
     
@@ -91,6 +105,12 @@ def option(request, option_name):
         bids = [o.bid for o in optioncontracts]
         asks = [o.ask for o in optioncontracts]
         values = [o.value for o in optioncontracts]
+        bid_volume = [o.bid_volume for o in optioncontracts]
+        ask_volume = [o.ask_volume for o in optioncontracts]
+        last_trade_value = [o.last_trade_value for o in optioncontracts]
+        last_trade_volume = [o.last_trade_volume for o in optioncontracts]
+        last_trade_time = [o.last_trade_time for o in optioncontracts]
+        last_updated = [o.last_updated for o in optioncontracts]
         
 
     except:
@@ -103,7 +123,13 @@ def option(request, option_name):
                         'strikes' : strikes,
                         'bids' : bids,
                         'asks' : asks,
-                        'values' : values
+                        'values' : values,
+                        'bid_volume' : bid_volume,
+                        'ask_volume' : ask_volume,
+                        'last_trade_value' : last_trade_value,
+                        'last_trade_volume' : last_trade_volume,
+                        'last_trade_time' : last_trade_time,
+                        'last_updated' : last_updated,
                      }
                  )
 

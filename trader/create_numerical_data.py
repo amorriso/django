@@ -302,8 +302,9 @@ class Option(object):
                 # forget to update the code we should raise an error below.
                 cur.execute('PRAGMA table_info(' + self._optioncontract_table  + ')')
                 column_names = set([dict(i)['name'] for i in cur.fetchall()])
-                if column_names != set(['id', 'optiondefinition_id', 'strike', 'bid',
-                    'ask', 'value', 'vol', 'expiry_date', 'time_to_expiry', 'last_updated']):
+                if column_names != set(['id', 'optiondefinition_id', 'strike', 'bid', 'bid_volume',
+                    'ask', 'ask_volume', 'value', 'last_trade_value', 'last_trade_time',
+                    'last_trade_volume', 'vol', 'delta', 'expiry_date', 'time_to_expiry', 'last_updated']):
                     message = "Database schema appears to have been updated. " +\
                             "This code needs to be updated also. Problem table: " +\
                             self._optioncontract_table
@@ -314,9 +315,15 @@ class Option(object):
                         parameters = {  'o' : self._optiondefinition['id'],
                                         's' : strike,
                                         'b' : -99,
+                                        'bv' : -99,
                                         'a' : -99,
+                                        'av' : -99,
                                         'v' : -99,
+                                        'ltv' : -99,
+                                        'ltt' : datetime.datetime(1900,1,1,0,0,0),
+                                        'ltvolume' : -99,
                                         'vol' : -99,
+                                        'delta' : -99,
                                         'e' : expiry_date,
                                         't' : time_to_expiry,
                                         'u' : datetime.datetime(1900,1,1,0,0,0)
@@ -324,8 +331,8 @@ class Option(object):
                         cur.execute(
                             "INSERT INTO " + self._optioncontract_table + \
                             " (optiondefinition_id, strike, bid, ask, value, " + \
-                            "vol, expiry_date, time_to_expiry, last_updated) VALUES " + \
-                            "(:o, :s, :b, :a, :v, :vol, :e, :t, :u)",
+                            "vol, expiry_date, time_to_expiry, last_updated, bid_volume, ask_volume, last_trade_value, last_trade_time, last_trade_volume, delta) VALUES " + \
+                            "(:o, :s, :b, :a, :v, :vol, :e, :t, :u, :bv, :av, :ltv, :ltt, :ltvolume, :delta)",
                             parameters
                             )
         else:
@@ -362,9 +369,15 @@ class Option(object):
             dateandtimenow = datetime.datetime.now()
 
             info['bid'] = (strike - atm_strike)**2 - 5 + scipy.random.randn(1)[0] * 2
+            info['bid_volume'] = scipy.random.randint(0,10)
             info['ask'] = (strike - atm_strike)**2 + 5 + scipy.random.randn(1)[0] * 2
+            info['ask_volume'] = scipy.random.randint(0,10)
             info['value'] = (info['bid'] + info['ask'] ) / 2
+            info['last_trade_value'] = info['value'] + scipy.random.randn(1)[0] * 2
+            info['last_trade_time'] = dateandtimenow - datetime.timedelta(seconds=100)
+            info['last_trade_volume'] = scipy.random.randint(0,10)
             info['vol'] = (strike - atm_strike)**2
+            info['delta'] = info['vol'] + 1
             info['last_updated'] = dateandtimenow
             info['time_to_expiry'] = hf.diff_dates_year_fraction(
                     hf.sqldate2datetime(info['expiry_date']), dateandtimenow
@@ -382,7 +395,14 @@ class Option(object):
                             "UPDATE " + self._optioncontract_table + " " +\
                                     "SET bid = :bid, ask = :ask, value = :value, " + \
                                     "vol = :vol, last_updated = :last_updated, " + \
-                                    "time_to_expiry = :time_to_expiry WHERE " + \
+                                    "time_to_expiry = :time_to_expiry, "+ \
+                                    "bid_volume = :bid_volume, "+ \
+                                    "ask_volume = :ask_volume, "+ \
+                                    "last_trade_value = :last_trade_value, "+ \
+                                    "last_trade_time = :last_trade_time, "+ \
+                                    "last_trade_volume = :last_trade_volume, "+ \
+                                    "delta = :delta "+ \
+                                    "WHERE " + \
                                     "id = :id",
                             info
                             )
@@ -404,9 +424,12 @@ future_obj = Future(db, "BUNDMAR14", 'marketdata_future')
 future_obj._get_future_from_db()
 future_obj.get_and_add_values()
 
-option_obj = Option(db, 'marketdata_future', 'marketdata_optiondefinition', 'marketdata_optioncontract', 'BUND_OPT_JAN', 20)
-option_obj2 = Option(db, 'marketdata_future', 'marketdata_optiondefinition', 'marketdata_optioncontract', 'BUND_OPT_FEB', 20)
-option_obj3 = Option(db, 'marketdata_future', 'marketdata_optiondefinition', 'marketdata_optioncontract', 'BUND_OPT_MAR', 20)
+option_obj = Option(db, 'marketdata_future', 'marketdata_optiondefinition', 
+        'marketdata_optioncontract', 'BUND_OPT_JAN', 20)
+option_obj2 = Option(db, 'marketdata_future', 'marketdata_optiondefinition', 
+        'marketdata_optioncontract', 'BUND_OPT_FEB', 20)
+option_obj3 = Option(db, 'marketdata_future', 'marketdata_optiondefinition', 
+        'marketdata_optioncontract', 'BUND_OPT_MAR', 20)
 option_obj.get_and_add_values()
 option_obj2.get_and_add_values()
 option_obj3.get_and_add_values()

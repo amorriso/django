@@ -8,7 +8,7 @@ function getDataOld(option_name) {
     // ajax goes here
     return retvalue;
 }
-function getData(option_name) {
+function getData() {
     var result = [];
     $.ajax({
         url: "/marketdata/option/refresh/{{option.name}}/",
@@ -25,17 +25,32 @@ function getData(option_name) {
     });
 }
 
+function freezeData() {
+    var result = [];
+    $.ajax({
+        url: "/marketdata/option/refresh/{{option.name}}/",
+        data: {option_name: "{{option.name}}"},
+        type: 'POST',
+        dataType: "json",
+        success: function(data) {
+            freeze_chart.series[0].setData(data.bids, true);
+            freeze_chart.series[1].setData(data.asks, true);
+            freeze_chart.series[2].setData(data.values, true);
+		},
+		cache: false
+    });
+}
+
 $(document).ready(function () {
 
     live_chart = new Highcharts.Chart({
             chart: {
 				renderTo: 'marketdata',
                 animation: Highcharts.svg, // don't animate in old IE
-                marginRight: 10,
                 events: {
 						load: getData
-					    }
-                },
+				}
+            },
 
             exporting: {
                 buttons : {
@@ -90,10 +105,10 @@ $(document).ready(function () {
 
     });
 $(function () {
-    frozen_chart = new Highcharts.Chart({
+    freeze_chart = new Highcharts.Chart({
             chart: {
 				renderTo: 'frozen-marketdata'
-                   },
+            },
             exporting: {
                 buttons : {
                     contextButtons: {
@@ -141,7 +156,9 @@ $(function () {
                 data: {{asks}}
             }, {
                 name: 'Fair Value',
-                data: {{values}}
+                data: {{values}},
+                draggableY: true,
+                dragMinY: 0
             }]
         });
     });
@@ -151,6 +168,7 @@ $(function () {
 	</head>
 	<body>
     <script src="{{STATIC_URL}}highcharts/js/highcharts.js"></script>
+    <script src="{{STATIC_URL}}highcharts/js/draggable-points.js"></script>
     <script src="{{STATIC_URL}}highcharts/js/modules/exporting.js"></script>
 
 <!-- Fixed navbar -->
@@ -188,13 +206,18 @@ $(function () {
         </div>
         <div class="container">
             <div class="row">    
-                <div class="span7 pull-left">
-                    <div id="marketdata" style="max-width: 310px; height: 400px; margin: 0 auto"></div>
+                <div class="col-lg-10">
+                    <div id="marketdata" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
                 </div>
-                <div class="span4 offset8">
-                    <button type="button" class="btn btn-lg btn-success">Success</button>
+                <div class="col-lg-1">
+                    <div class="block" style="height: 165px;">
+                        <div class="centered">
+                            <button type="button" class="btn btn-lg btn-success" onclick="return freezeData();" >Freeze</button>
+                        </div>
+                        
+                    </div>
                 </div>
-            <div>
+            </div>
         </div>    
     </div>
     <div class="row">
@@ -205,13 +228,19 @@ $(function () {
                 </h1>
             </div>
         </div>
-        <div class="row">    
-            <div class="container span7 pull-left">
-                <div id="frozen-marketdata" style="max-width: 310px; height: 400px; margin: 0 auto"></div>
+        <div class="container">
+            <div class="row">    
+                <div class="col-lg-10">
+                    <div id="frozen-marketdata" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                </div>
+                <div class="col-lg-1">
+                    <div class="block" style="height: 165px;">
+                        <div class="centered">
+                            <button type="button" class="btn btn-lg btn-danger">Publish</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="container span4 offset1">
-                <button type="button" class="btn btn-lg btn-danger">Danger</button>
-            <div>
         </div>    
     </div>
 </div>
