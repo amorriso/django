@@ -12,7 +12,7 @@ class Future(models.Model):
     ask_volume = models.FloatField() 
     value = models.FloatField() 
     last_trade_value = models.FloatField()
-    last_trade_time = models.DateTimeField()
+    last_updated = models.DateTimeField()
     last_trade_volume = models.FloatField()
     month_tag = models.CharField(max_length=200)
     # should we rename expiry_date as effective_date?
@@ -41,7 +41,6 @@ class OptionContract(models.Model):
     ask = models.FloatField() 
     ask_volume = models.FloatField() 
     value = models.FloatField() 
-    last_trade_time = models.DateTimeField()
     last_trade_value = models.FloatField()
     last_trade_volume = models.FloatField()
     vol = models.FloatField() 

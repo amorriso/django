@@ -83,7 +83,45 @@ $(document).ready(function () {
                 }]
             },
             tooltip: {
-                valueSuffix: ''
+                formatter: function() {
+                    var strikes = {{strikes}};
+                    var bids = {{bids}};
+                    var asks = {{asks}};
+                    var values = {{values}};
+                    var bid_vol = {{bid_volume}};
+                    var ask_vol = {{ask_volume}};
+                    var last_trade_value = {{last_trade_value}};
+                    var last_trade_volume = {{last_trade_volume}};
+                    var last_updated = {{last_updated|safe}};
+                    if (this.series.name == 'Bids'){
+                        var s = '<b>' + 'Bid' +'</b>';
+                        s += '<br/><b>' + 'Strike: ' + strikes[this.x] +'</b>';
+                        s += '<br/> Bid price:    ' + bids[this.x];
+                        s += '<br/> Bid volume:   ' + bid_vol[this.x];
+                        s += '<br/> Last updated: ' + last_updated[this.x];
+                    }
+                    if (this.series.name == 'Asks'){
+                        var s = '<b>' + 'Asks' +'</b>';
+                        s += '<br/><b>' + 'Strike: ' + strikes[this.x] +'</b>';
+                        s += '<br/> Ask price:    ' + asks[this.x];
+                        s += '<br/> Ask volume:   ' + bid_vol[this.x];
+                        s += '<br/> Last updated: ' + last_updated[this.x];
+                    }
+                    if (this.series.name == 'LastTrade'){
+                        var s = '<b>' + 'Last Trade' +'</b>';
+                        s += '<br/><b>' + 'Strike: ' + strikes[this.x] +'</b>';
+                        s += '<br/> Last trade price:  ' + last_trade_value[this.x];
+                        s += '<br/> Last trade volume: ' + last_trade_volume[this.x];
+                        s += '<br/> Last updated:      ' + last_updated[this.x];
+                    }
+                    if (this.series.name == 'FairValue'){
+                        var s = '<b>' + 'Fair Value' +'</b>';
+                        s += '<br/><b>' + 'Strike: ' + strikes[this.x] +'</b>';
+                        s += '<br/> Value:        ' + values[this.x];
+                        s += '<br/> Last updated: ' + last_updated[this.x];
+                    }
+                return s;
+                }
             },
             legend: {
                 layout: 'vertical',
@@ -98,8 +136,11 @@ $(document).ready(function () {
                 name: 'Asks',
                 data: {{asks}}
             }, {
-                name: 'Fair Value',
+                name: 'FairValue',
                 data: {{values}}
+            }, {
+                name: 'LastTrade',
+                data: {{last_trade_value}}
             }]
         });
 

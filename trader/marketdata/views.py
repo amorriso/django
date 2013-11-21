@@ -66,8 +66,7 @@ def refresh_option(request, option_name):
             ask_volume = [o.ask_volume for o in optioncontracts]
             last_trade_value = [o.last_trade_value for o in optioncontracts]
             last_trade_volume = [o.last_trade_volume for o in optioncontracts]
-            last_trade_time = [o.last_trade_time.isoformat() for o in optioncontracts]
-            last_updated = [o.last_updated.isoformat() for o in optioncontracts]
+            last_updated = json.dumps([o.last_updated.strftime("%Y-%m-%d %H:%M:%S") for o in optioncontracts])
 
             return HttpResponse(json.dumps({
                                             'option': option.name, 
@@ -79,7 +78,6 @@ def refresh_option(request, option_name):
                                             'ask_volume' : ask_volume,
                                             'last_trade_value' : last_trade_value,
                                             'last_trade_volume' : last_trade_volume,
-                                            'last_trade_time' : last_trade_time,
                                             'last_updated' : last_updated,
                                             }), mimetype="application/json" )
         else:
@@ -109,9 +107,7 @@ def option(request, option_name):
         ask_volume = [o.ask_volume for o in optioncontracts]
         last_trade_value = [o.last_trade_value for o in optioncontracts]
         last_trade_volume = [o.last_trade_volume for o in optioncontracts]
-        last_trade_time = [o.last_trade_time for o in optioncontracts]
-        last_updated = [o.last_updated for o in optioncontracts]
-        
+        last_updated = json.dumps([o.last_updated.strftime("%Y-%m-%d %H:%M:%S") for o in optioncontracts])
 
     except:
         raise Http404
@@ -128,7 +124,6 @@ def option(request, option_name):
                         'ask_volume' : ask_volume,
                         'last_trade_value' : last_trade_value,
                         'last_trade_volume' : last_trade_volume,
-                        'last_trade_time' : last_trade_time,
                         'last_updated' : last_updated,
                      }
                  )

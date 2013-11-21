@@ -16,17 +16,17 @@ if len(option_contracts) > 0:
 
 future = Future(name = 'BUNDMAR14', bloomberg_id = 'BLOOMBERG_BUNDMAR14', easyscreen_id = 'EBF:FGBL Mar 13',
         bid = 140.0, bid_volume = 2, ask = 140.0, ask_volume = 2, value = 140.0, last_trade_value = 140.0, 
-        last_trade_time = datetime.datetime(2014, 06, 01, 0, 0, 0), last_trade_volume = 2,
+        last_updated = datetime.datetime(2014, 06, 01, 0, 0, 0), last_trade_volume = 2,
         month_tag = 'MAR14', expiry_date = datetime.datetime(2014,03,01,0,0,0))
 
 future2 = Future(name = 'BUNDJUN14', bloomberg_id = 'BLOOMBERG_BUNDJUN14', easyscreen_id = 'EBF:FGBL Jun 13',
         bid = 140.0, bid_volume = 2, ask = 140.0, ask_volume = 2, value = 160.0, last_trade_value = 140.0, 
-        last_trade_time = datetime.datetime(2014, 06, 01, 0, 0, 0), last_trade_volume = 2, 
+        last_updated = datetime.datetime(2014, 06, 01, 0, 0, 0), last_trade_volume = 2, 
         month_tag = 'JUN14', expiry_date = datetime.datetime(2014,06,01,0,0,0))
 
 future3 = Future(name = 'BUBBLEJUN14', bloomberg_id = 'BLOOMBERG_BUBBLEJUN14', easyscreen_id = 'EBF:FGBL Dec 13',
         bid = 140.0, bid_volume = 2, ask = 140.0, ask_volume = 2, value = 180.0, last_trade_value = 140.0, 
-        last_trade_time = datetime.datetime(2014, 06, 01, 0, 0, 0), last_trade_volume = 2,
+        last_updated = datetime.datetime(2014, 06, 01, 0, 0, 0), last_trade_volume = 2,
         month_tag = 'JUN14', expiry_date = datetime.datetime(2014,06,01,0,0,0))
 
 future.save()

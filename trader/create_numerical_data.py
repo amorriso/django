@@ -303,7 +303,7 @@ class Option(object):
                 cur.execute('PRAGMA table_info(' + self._optioncontract_table  + ')')
                 column_names = set([dict(i)['name'] for i in cur.fetchall()])
                 if column_names != set(['id', 'optiondefinition_id', 'strike', 'bid', 'bid_volume',
-                    'ask', 'ask_volume', 'value', 'last_trade_value', 'last_trade_time',
+                    'ask', 'ask_volume', 'value', 'last_trade_value', 'last_updated',
                     'last_trade_volume', 'vol', 'delta', 'expiry_date', 'time_to_expiry', 'last_updated']):
                     message = "Database schema appears to have been updated. " +\
                             "This code needs to be updated also. Problem table: " +\
@@ -331,7 +331,7 @@ class Option(object):
                         cur.execute(
                             "INSERT INTO " + self._optioncontract_table + \
                             " (optiondefinition_id, strike, bid, ask, value, " + \
-                            "vol, expiry_date, time_to_expiry, last_updated, bid_volume, ask_volume, last_trade_value, last_trade_time, last_trade_volume, delta) VALUES " + \
+                            "vol, expiry_date, time_to_expiry, last_updated, bid_volume, ask_volume, last_trade_value, last_updated, last_trade_volume, delta) VALUES " + \
                             "(:o, :s, :b, :a, :v, :vol, :e, :t, :u, :bv, :av, :ltv, :ltt, :ltvolume, :delta)",
                             parameters
                             )
@@ -374,7 +374,7 @@ class Option(object):
             info['ask_volume'] = scipy.random.randint(0,10)
             info['value'] = (info['bid'] + info['ask'] ) / 2
             info['last_trade_value'] = info['value'] + scipy.random.randn(1)[0] * 2
-            info['last_trade_time'] = dateandtimenow - datetime.timedelta(seconds=100)
+            info['last_updated'] = dateandtimenow - datetime.timedelta(seconds=100)
             info['last_trade_volume'] = scipy.random.randint(0,10)
             info['vol'] = (strike - atm_strike)**2
             info['delta'] = info['vol'] + 1
@@ -399,7 +399,7 @@ class Option(object):
                                     "bid_volume = :bid_volume, "+ \
                                     "ask_volume = :ask_volume, "+ \
                                     "last_trade_value = :last_trade_value, "+ \
-                                    "last_trade_time = :last_trade_time, "+ \
+                                    "last_updated = :last_updated, "+ \
                                     "last_trade_volume = :last_trade_volume, "+ \
                                     "delta = :delta "+ \
                                     "WHERE " + \
