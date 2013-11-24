@@ -30,6 +30,7 @@ class OptionDefinition(models.Model):
     expiry_date = models.DateTimeField()
     strike_interval = models.FloatField(default=0.5)
     price_movement = models.FloatField(default=0.01)
+    number_of_OTM_options = models.IntegerField(default=10)
 
     def __unicode__(self):
         return self.name + ', based on: ' + str(self.future)
