@@ -29,6 +29,7 @@ class OptionDefinition(models.Model):
     month_tag = models.CharField(max_length=200)
     expiry_date = models.DateTimeField()
     strike_interval = models.FloatField(default=0.5)
+    price_movement = models.FloatField(default=0.01)
 
     def __unicode__(self):
         return self.name + ', based on: ' + str(self.future)
