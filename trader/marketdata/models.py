@@ -37,6 +37,8 @@ class OptionDefinition(models.Model):
 
 class OptionContract(models.Model):
     optiondefinition = models.ForeignKey(OptionDefinition)
+    easy_screen_mnemonic = models.CharField(max_length=200)
+    bloomberg_name = models.CharField(max_length=200)
     strike = models.FloatField() 
     bid = models.FloatField() 
     bid_volume = models.FloatField() 
