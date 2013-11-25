@@ -14,7 +14,7 @@ option_contracts = OptionContract.objects.all()
 if len(option_contracts) > 0:
     option_contracts.delete()
 
-future = Future(name = 'BUNDMAR14', bloomberg_id = 'BLOOMBERG_BUNDMAR14', easyscreen_id = 'EBF:FGBL Mar 13',
+future = Future(name = 'BUNDMAR14', bloomberg_id = 'BLOOMBERG_BUNDMAR14', easyscreen_id = 'EBF:FGBL Mar 14',
         bid = 140.0, bid_volume = 2, ask = 140.0, ask_volume = 2, value = 140.0, last_trade_value = 140.0, 
         last_updated = datetime.datetime(2013, 11, 01, 0, 0, 0), last_trade_volume = 2,
         month_tag = 'MAR14', expiry_date = datetime.datetime(2014,03,21,0,0,0))
@@ -24,7 +24,7 @@ future2 = Future(name = 'BUNDDEC13', bloomberg_id = 'BLOOMBERG_BUNDDEC13', easys
         last_updated = datetime.datetime(2013, 11, 01, 0, 0, 0), last_trade_volume = 2, 
         month_tag = 'DEC13', expiry_date = datetime.datetime(2014,06,21,0,0,0))
 
-future3 = Future(name = 'BOBLMAR14', bloomberg_id = 'BLOOMBERG_BOBLMAR14', easyscreen_id = 'EBF:FGBM Mar 13',
+future3 = Future(name = 'BOBLMAR14', bloomberg_id = 'BLOOMBERG_BOBLMAR14', easyscreen_id = 'EBF:FGBM Mar 14',
         bid = 140.0, bid_volume = 2, ask = 140.0, ask_volume = 2, value = 180.0, last_trade_value = 140.0, 
         last_updated = datetime.datetime(2013, 11, 01, 0, 0, 0), last_trade_volume = 2,
         month_tag = 'MAR14', expiry_date = datetime.datetime(2014,06,21,0,0,0))
