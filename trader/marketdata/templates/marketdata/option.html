@@ -11,7 +11,7 @@ function getDataOld(option_name) {
 function getData() {
     var result = [];
     $.ajax({
-        url: "/marketdata/option/refresh/{{option.name}}/",
+        url: "ccc/marketdata/option/refresh/{{option.name}}/",
         data: {option_name: "{{option.name}}"},
         type: 'POST',
         dataType: "json",
@@ -19,6 +19,7 @@ function getData() {
             live_chart.series[0].setData(data.bids, true);
             live_chart.series[1].setData(data.asks, true);
             live_chart.series[2].setData(data.values, true);
+            live_chart.series[3].setData(data.last_trade_value, true);
             setTimeout(getData, 1000);
 		},
 		cache: false
@@ -70,7 +71,9 @@ $(document).ready(function () {
                 x: -20
             },
             xAxis: {
-                data: {{ strikes }}
+                //categories: {{ strikes }},
+                //title: {text: "Strike"},
+                //tickmarkPlacement: 'on'
             },
             yAxis: {
                 title: {
@@ -168,7 +171,9 @@ $(function () {
                 x: -20
             },
             xAxis: {
-                data: {{ strikes }}
+                categories: {{ strikes }},
+                title: {text: "Strike"},
+                tickmarkPlacement: 'on'
             },
             yAxis: {
                 title: {

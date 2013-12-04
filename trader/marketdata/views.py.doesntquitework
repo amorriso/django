@@ -58,14 +58,14 @@ def refresh_option(request, option_name):
                 OptionContract.objects.filter(optiondefinition_id=option.id), 
                 key = lambda x : x.strike)
     
-            strikes = [o.strike for o in optioncontracts]
-            bids = [o.bid if o.bid > 0 else None for o in optioncontracts]
-            asks = [o.ask if o.ask > 0 else None for o in optioncontracts]
-            values = [o.value if o.value > 0 else None for o in optioncontracts]
-            bid_volume = [o.bid_volume if o.bid_volume > 0 else None for o in optioncontracts]
-            ask_volume = [o.ask_volume if o.ask_volume > 0 else None for o in optioncontracts]
-            last_trade_value = [o.last_trade_value if o.last_trade_value > 0 else None for o in optioncontracts]
-            last_trade_volume = [o.last_trade_volume if o.last_trade_volume > 0 else None for o in optioncontracts]
+            strikes = json.dumps([o.strike for o in optioncontracts])
+            bids = json.dumps([o.bid if o.bid > 0 else None for o in optioncontracts])
+            asks = json.dumps([o.ask if o.ask > 0 else None for o in optioncontracts])
+            values = json.dumps([o.value if o.value > 0 else None for o in optioncontracts])
+            bid_volume = json.dumps([o.bid_volume if o.bid_volume > 0 else None for o in optioncontracts])
+            ask_volume = json.dumps([o.ask_volume if o.ask_volume > 0 else None for o in optioncontracts])
+            last_trade_value = json.dumps([o.last_trade_value if o.last_trade_value > 0 else None for o in optioncontracts])
+            last_trade_volume = json.dumps([o.last_trade_volume if o.last_trade_volume > 0 else None for o in optioncontracts])
             last_updated = json.dumps([o.last_updated.strftime("%Y-%m-%d %H:%M:%S") for o in optioncontracts])
 
             return HttpResponse(json.dumps({
@@ -99,10 +99,8 @@ def option(request, option_name):
             OptionContract.objects.filter(optiondefinition_id=option.id), 
             key = lambda x : x.strike)
 
-        strikes = [o.strike for o in optioncontracts]
-        bids = [o.bid if o.bid > 0 else None for o in optioncontracts]
-        json_strikes = json.dumps(strikes)
-        json_bids = json.dumps(bids)
+        strikes = json.dumps([o.strike for o in optioncontracts])
+        bids = json.dumps([o.bid if o.bid > 0 else None for o in optioncontracts])
         asks = json.dumps([o.ask if o.ask > 0 else None for o in optioncontracts])
         values = json.dumps([o.value if o.value > 0 else None for o in optioncontracts])
         bid_volume = json.dumps([o.bid_volume if o.bid_volume > 0 else None for o in optioncontracts])
@@ -111,16 +109,6 @@ def option(request, option_name):
         last_trade_volume = json.dumps([o.last_trade_volume if o.last_trade_volume > 0 else None for o in optioncontracts])
         last_updated = json.dumps([o.last_updated.strftime("%Y-%m-%d %H:%M:%S") for o in optioncontracts])
 
-        #get future price
-        future = option.future
-        callbool = [True if o.easy_screen_mnemonic[-3] == 'c' else False for o in optioncontracts]
-        today = datetime.date.today()
-        time2expiry = hf.diff_dates_year_fraction(option.expiry_date, today)
-        import pdb
-        pdb.set_trace()
-        vols = [hf.black_pricer_vol(time2expiry, future.bid, K, Val, call) for K, Val, call in zip(strikes, bids, callbool)]
-
-
     except:
         raise Http404
 
@@ -128,8 +116,8 @@ def option(request, option_name):
                     request, 'marketdata/option.html', 
                     {
                         'option': option, 
-                        'strikes' : json_strikes,
-                        'bids' : json_bids,
+                        'strikes' : strikes,
+                        'bids' : bids,
                         'asks' : asks,
                         'values' : values,
                         'bid_volume' : bid_volume,
