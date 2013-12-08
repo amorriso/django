@@ -59,6 +59,7 @@ def refresh_option(request, option_name):
                 key = lambda x : x.strike)
     
             strikes = [o.strike for o in optioncontracts]
+            json_strikes = json.dumps(strikes)
             bids = [o.bid if o.bid > 0 else None for o in optioncontracts]
             asks = [o.ask if o.ask > 0 else None for o in optioncontracts]
             values = [o.value if o.value > 0 else None for o in optioncontracts]
@@ -68,15 +69,37 @@ def refresh_option(request, option_name):
             last_trade_volume = [o.last_trade_volume if o.last_trade_volume > 0 else None for o in optioncontracts]
             last_updated = json.dumps([o.last_updated.strftime("%Y-%m-%d %H:%M:%S") for o in optioncontracts])
 
+            #get future price
+            future = option.future
+            callbool = [True if o.easy_screen_mnemonic[-3] == 'c' else False for o in optioncontracts]
+            today = datetime.date.today()
+            time2expiry = hf.diff_dates_year_fraction(option.expiry_date, today)
+    
+            # calc vols and deltas
+            bid_vols = [hf.black_pricer_vol(time2expiry, future.bid, K, Val, call) for K, Val, call in zip(strikes, bids, callbool)]
+            bid_delta = json.dumps([hf.black_delta(time2expiry, future.bid, K, vol, call) for K, vol, call in zip(strikes, bid_vols, callbool)])
+    
+            ask_vols = [hf.black_pricer_vol(time2expiry, future.ask, K, Val, call) for K, Val, call in zip(strikes, asks, callbool)]
+            ask_delta = json.dumps([hf.black_delta(time2expiry, future.ask, K, vol, call) for K, vol, call in zip(strikes, ask_vols, callbool)])
+    
+            value_vols = [hf.black_pricer_vol(time2expiry, future.value, K, Val, call) for K, Val, call in zip(strikes, values, callbool)]
+            value_delta = json.dumps([hf.black_delta(time2expiry, future.value, K, vol, call) for K, vol, call in zip(strikes, value_vols, callbool)])
+    
+            last_trade_vols = [hf.black_pricer_vol(time2expiry, future.last_trade_value, K, Val, call) for K, Val, call in zip(strikes, last_trade_value, callbool)]
+            json_last_trade_vols = json.dumps(last_trade_vols)
+
             return HttpResponse(json.dumps({
                                             'option': option.name, 
-                                            'strikes' : strikes,
-                                            'bids' : bids,
-                                            'asks' : asks,
-                                            'values' : values,
+                                            'strikes' : json_strikes,
+                                            'bids' : bid_vols,
+                                            'bids_delta' : bid_delta,
+                                            'asks' : ask_vols,
+                                            'asks_delta' : ask_delta,
+                                            'values' : value_vols,
+                                            'values_delta' : value_delta,
                                             'bid_volume' : bid_volume,
                                             'ask_volume' : ask_volume,
-                                            'last_trade_value' : last_trade_value,
+                                            'last_trade_value' : last_trade_vols,
                                             'last_trade_volume' : last_trade_volume,
                                             'last_updated' : last_updated,
                                             }), mimetype="application/json" )
@@ -103,11 +126,14 @@ def option(request, option_name):
         bids = [o.bid if o.bid > 0 else None for o in optioncontracts]
         json_strikes = json.dumps(strikes)
         json_bids = json.dumps(bids)
-        asks = json.dumps([o.ask if o.ask > 0 else None for o in optioncontracts])
-        values = json.dumps([o.value if o.value > 0 else None for o in optioncontracts])
+        asks = [o.ask if o.ask > 0 else None for o in optioncontracts]
+        json_asks = json.dumps(asks)
+        values = [o.value if o.value > 0 else None for o in optioncontracts]
+        json_values = json.dumps(values)
         bid_volume = json.dumps([o.bid_volume if o.bid_volume > 0 else None for o in optioncontracts])
         ask_volume = json.dumps([o.ask_volume if o.ask_volume > 0 else None for o in optioncontracts])
-        last_trade_value = json.dumps([o.last_trade_value if o.last_trade_value > 0 else None for o in optioncontracts])
+        last_trade_value = [o.last_trade_value if o.last_trade_value > 0 else None for o in optioncontracts]
+        json_last_trade_value = json.dumps(last_trade_value)
         last_trade_volume = json.dumps([o.last_trade_volume if o.last_trade_volume > 0 else None for o in optioncontracts])
         last_updated = json.dumps([o.last_updated.strftime("%Y-%m-%d %H:%M:%S") for o in optioncontracts])
 
@@ -116,10 +142,23 @@ def option(request, option_name):
         callbool = [True if o.easy_screen_mnemonic[-3] == 'c' else False for o in optioncontracts]
         today = datetime.date.today()
         time2expiry = hf.diff_dates_year_fraction(option.expiry_date, today)
-        import pdb
-        pdb.set_trace()
-        vols = [hf.black_pricer_vol(time2expiry, future.bid, K, Val, call) for K, Val, call in zip(strikes, bids, callbool)]
 
+        # calc vols and deltas
+        bid_vols = [hf.black_pricer_vol(time2expiry, future.bid, K, Val, call) for K, Val, call in zip(strikes, bids, callbool)]
+        json_bid_vols = json.dumps(bid_vols)
+        bid_delta = json.dumps([hf.black_delta(time2expiry, future.bid, K, vol, call) for K, vol, call in zip(strikes, bid_vols, callbool)])
+
+        ask_vols = [hf.black_pricer_vol(time2expiry, future.ask, K, Val, call) for K, Val, call in zip(strikes, asks, callbool)]
+        json_ask_vols = json.dumps(ask_vols)
+        ask_delta = json.dumps([hf.black_delta(time2expiry, future.ask, K, vol, call) for K, vol, call in zip(strikes, ask_vols, callbool)])
+
+        value_vols = [hf.black_pricer_vol(time2expiry, future.value, K, Val, call) for K, Val, call in zip(strikes, values, callbool)]
+        json_value_vols = json.dumps(value_vols)
+        value_delta = json.dumps([hf.black_delta(time2expiry, future.value, K, vol, call) for K, vol, call in zip(strikes, value_vols, callbool)])
+
+        last_trade_vols = [hf.black_pricer_vol(time2expiry, future.last_trade_value, K, Val, call) for K, Val, call in zip(strikes, last_trade_value, callbool)]
+        json_last_trade_vols = json.dumps(last_trade_vols)
+        last_trade_delta = json.dumps([hf.black_delta(time2expiry, future.last_trade_value, K, vol, call) for K, vol, call in zip(strikes, last_trade_vols, callbool)])
 
     except:
         raise Http404
@@ -129,12 +168,15 @@ def option(request, option_name):
                     {
                         'option': option, 
                         'strikes' : json_strikes,
-                        'bids' : json_bids,
-                        'asks' : asks,
-                        'values' : values,
+                        'bids' : json_bid_vols,
+                        'bids_delta' : bid_delta,
+                        'asks' : json_ask_vols,
+                        'asks_delta' : ask_delta,
+                        'values' : json_value_vols,
+                        'values_delta' : value_delta,
                         'bid_volume' : bid_volume,
                         'ask_volume' : ask_volume,
-                        'last_trade_value' : last_trade_value,
+                        'last_trade_value' : json_last_trade_vols,
                         'last_trade_volume' : last_trade_volume,
                         'last_updated' : last_updated,
                      }

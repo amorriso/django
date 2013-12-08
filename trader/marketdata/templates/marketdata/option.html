@@ -11,7 +11,7 @@ function getDataOld(option_name) {
 function getData() {
     var result = [];
     $.ajax({
-        url: "ccc/marketdata/option/refresh/{{option.name}}/",
+        url: "/marketdata/option/refresh/{{option.name}}/",
         data: {option_name: "{{option.name}}"},
         type: 'POST',
         dataType: "json",
@@ -34,9 +34,20 @@ function freezeData() {
         type: 'POST',
         dataType: "json",
         success: function(data) {
+            freeze_chart.xAxis[1].setCategories(JSON.parse(data.last_updated));
             freeze_chart.series[0].setData(data.bids, true);
             freeze_chart.series[1].setData(data.asks, true);
             freeze_chart.series[2].setData(data.values, true);
+            freeze_chart.series[3].setData(data.bid_volume, true);
+            freeze_chart.series[3].setVisible(false);
+            freeze_chart.series[4].setData(data.ask_volume, true);
+            freeze_chart.series[4].setVisible(false);
+            freeze_chart.series[5].setData(data.bids_delta, true);
+            freeze_chart.series[5].setVisible(false);
+            freeze_chart.series[6].setData(data.asks_delta, true);
+            freeze_chart.series[6].setVisible(false);
+            freeze_chart.series[7].setData(data.values_delta, true);
+            freeze_chart.series[7].setVisible(false);
 		},
 		cache: false
     });
@@ -71,13 +82,13 @@ $(document).ready(function () {
                 x: -20
             },
             xAxis: {
-                //categories: {{ strikes }},
-                //title: {text: "Strike"},
-                //tickmarkPlacement: 'on'
+                categories: {{ strikes }},
+                title: {text: "Strike"},
+                tickmarkPlacement: 'on'
             },
             yAxis: {
                 title: {
-                    text: ''
+                    text: 'Vol'
                 },
                 plotLines: [{
                     value: 0,
@@ -86,45 +97,7 @@ $(document).ready(function () {
                 }]
             },
             tooltip: {
-                formatter: function() {
-                    var strikes = {{strikes}};
-                    var bids = {{bids}};
-                    var asks = {{asks}};
-                    var values = {{values}};
-                    var bid_vol = {{bid_volume}};
-                    var ask_vol = {{ask_volume}};
-                    var last_trade_value = {{last_trade_value}};
-                    var last_trade_volume = {{last_trade_volume}};
-                    var last_updated = {{last_updated|safe}};
-                    if (this.series.name == 'Bids'){
-                        var s = '<b>' + 'Bid' +'</b>';
-                        s += '<br/><b>' + 'Strike: ' + strikes[this.x] +'</b>';
-                        s += '<br/> Bid price:    ' + bids[this.x];
-                        s += '<br/> Bid volume:   ' + bid_vol[this.x];
-                        s += '<br/> Last updated: ' + last_updated[this.x];
-                    }
-                    if (this.series.name == 'Asks'){
-                        var s = '<b>' + 'Asks' +'</b>';
-                        s += '<br/><b>' + 'Strike: ' + strikes[this.x] +'</b>';
-                        s += '<br/> Ask price:    ' + asks[this.x];
-                        s += '<br/> Ask volume:   ' + bid_vol[this.x];
-                        s += '<br/> Last updated: ' + last_updated[this.x];
-                    }
-                    if (this.series.name == 'LastTrade'){
-                        var s = '<b>' + 'Last Trade' +'</b>';
-                        s += '<br/><b>' + 'Strike: ' + strikes[this.x] +'</b>';
-                        s += '<br/> Last trade price:  ' + last_trade_value[this.x];
-                        s += '<br/> Last trade volume: ' + last_trade_volume[this.x];
-                        s += '<br/> Last updated:      ' + last_updated[this.x];
-                    }
-                    if (this.series.name == 'FairValue'){
-                        var s = '<b>' + 'Fair Value' +'</b>';
-                        s += '<br/><b>' + 'Strike: ' + strikes[this.x] +'</b>';
-                        s += '<br/> Value:        ' + values[this.x];
-                        s += '<br/> Last updated: ' + last_updated[this.x];
-                    }
-                return s;
-                }
+                valueSuffix: ''
             },
             legend: {
                 layout: 'vertical',
@@ -134,20 +107,23 @@ $(document).ready(function () {
             },
             series: [{
                 name: 'Bids',
-                data: {{ bids }}
+                data: {{ bids }},
+                lineWidth : 0
             }, {
                 name: 'Asks',
-                data: {{asks}}
+                data: {{asks}},
+                lineWidth : 0
             }, {
-                name: 'FairValue',
+                name: 'Fair Value',
                 data: {{values}}
             }, {
-                name: 'LastTrade',
-                data: {{last_trade_value}}
+                name: 'Last Trade',
+                data: {{last_trade_value}},
+                lineWidth : 0
             }]
-        });
-
     });
+});
+
 $(function () {
     freeze_chart = new Highcharts.Chart({
             chart: {
@@ -170,14 +146,16 @@ $(function () {
                 text: '',
                 x: -20
             },
-            xAxis: {
+            xAxis: [{
                 categories: {{ strikes }},
                 title: {text: "Strike"},
                 tickmarkPlacement: 'on'
-            },
+                },{
+                categories: {{last_updated|safe}}
+            }],
             yAxis: {
                 title: {
-                    text: ''
+                    text: 'Vol'
                 },
                 plotLines: [{
                     value: 0,
@@ -186,7 +164,48 @@ $(function () {
                 }]
             },
             tooltip: {
-                valueSuffix: ''
+                formatter: function() {
+                    var strikes = freeze_chart.xAxis[0].categories;
+                    var bids = freeze_chart.series[0].yData;
+                    var asks = freeze_chart.series[1].yData;
+                    var values = freeze_chart.series[2].yData;
+                    var bid_vol = freeze_chart.series[3].yData;
+                    var ask_vol = freeze_chart.series[4].yData;
+                    var bids_delta = freeze_chart.series[5].yData;
+                    var asks_delta = freeze_chart.series[6].yData;
+                    var values_delta = freeze_chart.series[7].yData;
+                    var last_updated = freeze_chart.xAxis[1].categories;
+                    if (this.series.name == "Bids"){
+                        var s = "<b>" + "Bid Vol" +"</b>";
+                        //s += "<br/><b>" + "Strike: " + freeze_chart.xAxis[0].categories[this.point.x] +"</b>";
+                        s += "<br/><b>" + "Strike: " + strikes[this.point.x] +"</b>";
+                        s += "<br/> Bid vol:       " + bids[this.point.x];
+                        s += "<br/> Bid volume:    " + bid_vol[this.point.x];
+                        s += "<br/> Bid delta:     " + bids_delta[this.point.x];
+                        s += "<br/> Last updated:  " + last_updated[this.point.x];
+                    }
+                    else if (this.series.name == "Asks"){
+                        var s = "<b>" + "Ask Vol" +"</b>";
+                        s += "<br/><b>" + "Strike: " + strikes[this.point.x] +"</b>";
+                        s += "<br/> Ask vol:       " + asks[this.point.x];
+                        s += "<br/> Ask volume:    " + ask_vol[this.point.x];
+                        s += "<br/> Ask delta:     " + asks_delta[this.point.x];
+                        s += "<br/> Last updated:  " + last_updated[this.point.x];
+                    }
+                    else if (this.series.name == "Fair Value"){
+                        var s = "<b>" + "Fair Value Vol" +"</b>";
+                        s += "<br/><b>" + "Strike: " + strikes[this.point.x] +"</b>";
+                        //s += "<br/> Value:         " + values[this.point.x];
+                        s += "<br/> Last updated:  " + last_updated[this.point.x];
+                    }
+                    else 
+                    {
+                        var s = "<b>" + this.series.name +"</b>";
+                        s += "<br/><b>" + "Strike: " + strikes[this.point.x] +"</b>";
+                        s += "<br/> Value:         " + this.series.yData[this.point.x];
+                    }
+                return s;
+                }
             },
             legend: {
                 layout: 'vertical',
@@ -196,20 +215,56 @@ $(function () {
             },
             series: [{
                 name: 'Bids',
-                data: {{ bids }}
+                data: {{ bids }},
+                lineWidth : 0
             }, {
                 name: 'Asks',
-                data: {{asks}}
+                data: {{asks}},
+                lineWidth : 0
             }, {
                 name: 'Fair Value',
                 data: {{values}},
                 draggableY: true,
                 dragMinY: 0
-            }]
-        });
+            }, {
+                name: 'Bids Volume',
+                data: {{bid_volume}},
+                lineWidth : 0,
+                visible: false
+            }, {
+                name: 'Asks Volume',
+                data: {{ask_volume}},
+                lineWidth : 0,
+                visible: false
+            }, {
+                name: 'Bids Delta',
+                data: {{bids_delta}},
+                lineWidth : 0,
+                visible: false
+            }, {
+                name: 'Asks Delta',
+                data: {{asks_delta}},
+                lineWidth : 0,
+                visible: false
+            }, {
+                name: 'Fair Value Delta',
+                data: {{values_delta}},
+                lineWidth : 0,
+                visible: false
+            }],
     });
-   
+});
 
+		</script>
+        <style type="text/css" title="currentStyle">
+			@import "{{STATIC_URL}}DataTables/media/css/demo_page.css";
+			@import "{{STATIC_URL}}DataTables/media/css/demo_table.css";
+		</style>
+        <script src="{{STATIC_URL}}DataTables/media/js/jquery.dataTables.js"></script>
+        <script type="text/javascript" charset="utf-8">
+			$(function() {
+				$('#example').dataTable();
+			});
 		</script>
 	</head>
 	<body>
@@ -240,6 +295,7 @@ $(function () {
 
 <script src="{{STATIC_URL}}highcharts/js/highcharts.js"></script>
 <script src="{{STATIC_URL}}highcharts/js/modules/exporting.js"></script>
+
 
 <div class="container theme-showcase">
     <div class="row">
@@ -278,6 +334,455 @@ $(function () {
             <div class="row">    
                 <div class="col-lg-10">
                     <div id="frozen-marketdata" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                </div>
+                <div class="col-lg-1">
+                    <div class="block" style="height: 165px;">
+                        <div class="centered">
+                            <button type="button" class="btn btn-lg btn-danger">Publish</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>    
+    </div>
+    <div class="row">
+        <div class="row"> 
+            <div class="page-header">
+                <h1>
+                    Publish Data
+                </h1>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">    
+                <div class="col-lg-10">
+
+                    <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+                    	<thead>
+                    		<tr>
+                    			<th>Rendering engine</th>
+                    			<th>Browser</th>
+                    			<th>Platform(s)</th>
+                    			<th>Engine version</th>
+                    			<th>CSS grade</th>
+                    		</tr>
+                    	</thead>
+                    	<tbody>
+                    		<tr class="gradeX">
+                    			<td>Trident</td>
+                    			<td>Internet
+                    				 Explorer 4.0</td>
+                    			<td>Win 95+</td>
+                    			<td class="center">4</td>
+                    			<td class="center">X</td>
+                    		</tr>
+                    		<tr class="gradeC">
+                    			<td>Trident</td>
+                    			<td>Internet
+                    				 Explorer 5.0</td>
+                    			<td>Win 95+</td>
+                    			<td class="center">5</td>
+                    			<td class="center">C</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Trident</td>
+                    			<td>Internet
+                    				 Explorer 5.5</td>
+                    			<td>Win 95+</td>
+                    			<td class="center">5.5</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Trident</td>
+                    			<td>Internet
+                    				 Explorer 6</td>
+                    			<td>Win 98+</td>
+                    			<td class="center">6</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Trident</td>
+                    			<td>Internet Explorer 7</td>
+                    			<td>Win XP SP2+</td>
+                    			<td class="center">7</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Trident</td>
+                    			<td>AOL browser (AOL desktop)</td>
+                    			<td>Win XP</td>
+                    			<td class="center">6</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Firefox 1.0</td>
+                    			<td>Win 98+ / OSX.2+</td>
+                    			<td class="center">1.7</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Firefox 1.5</td>
+                    			<td>Win 98+ / OSX.2+</td>
+                    			<td class="center">1.8</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Firefox 2.0</td>
+                    			<td>Win 98+ / OSX.2+</td>
+                    			<td class="center">1.8</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Firefox 3.0</td>
+                    			<td>Win 2k+ / OSX.3+</td>
+                    			<td class="center">1.9</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Camino 1.0</td>
+                    			<td>OSX.2+</td>
+                    			<td class="center">1.8</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Camino 1.5</td>
+                    			<td>OSX.3+</td>
+                    			<td class="center">1.8</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Netscape 7.2</td>
+                    			<td>Win 95+ / Mac OS 8.6-9.2</td>
+                    			<td class="center">1.7</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Netscape Browser 8</td>
+                    			<td>Win 98SE+</td>
+                    			<td class="center">1.7</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Netscape Navigator 9</td>
+                    			<td>Win 98+ / OSX.2+</td>
+                    			<td class="center">1.8</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Mozilla 1.0</td>
+                    			<td>Win 95+ / OSX.1+</td>
+                    			<td class="center">1</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Mozilla 1.1</td>
+                    			<td>Win 95+ / OSX.1+</td>
+                    			<td class="center">1.1</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Mozilla 1.2</td>
+                    			<td>Win 95+ / OSX.1+</td>
+                    			<td class="center">1.2</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Mozilla 1.3</td>
+                    			<td>Win 95+ / OSX.1+</td>
+                    			<td class="center">1.3</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Mozilla 1.4</td>
+                    			<td>Win 95+ / OSX.1+</td>
+                    			<td class="center">1.4</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Mozilla 1.5</td>
+                    			<td>Win 95+ / OSX.1+</td>
+                    			<td class="center">1.5</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Mozilla 1.6</td>
+                    			<td>Win 95+ / OSX.1+</td>
+                    			<td class="center">1.6</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Mozilla 1.7</td>
+                    			<td>Win 98+ / OSX.1+</td>
+                    			<td class="center">1.7</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Mozilla 1.8</td>
+                    			<td>Win 98+ / OSX.1+</td>
+                    			<td class="center">1.8</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Seamonkey 1.1</td>
+                    			<td>Win 98+ / OSX.2+</td>
+                    			<td class="center">1.8</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Gecko</td>
+                    			<td>Epiphany 2.20</td>
+                    			<td>Gnome</td>
+                    			<td class="center">1.8</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Webkit</td>
+                    			<td>Safari 1.2</td>
+                    			<td>OSX.3</td>
+                    			<td class="center">125.5</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Webkit</td>
+                    			<td>Safari 1.3</td>
+                    			<td>OSX.3</td>
+                    			<td class="center">312.8</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Webkit</td>
+                    			<td>Safari 2.0</td>
+                    			<td>OSX.4+</td>
+                    			<td class="center">419.3</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Webkit</td>
+                    			<td>Safari 3.0</td>
+                    			<td>OSX.4+</td>
+                    			<td class="center">522.1</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Webkit</td>
+                    			<td>OmniWeb 5.5</td>
+                    			<td>OSX.4+</td>
+                    			<td class="center">420</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Webkit</td>
+                    			<td>iPod Touch / iPhone</td>
+                    			<td>iPod</td>
+                    			<td class="center">420.1</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Webkit</td>
+                    			<td>S60</td>
+                    			<td>S60</td>
+                    			<td class="center">413</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Presto</td>
+                    			<td>Opera 7.0</td>
+                    			<td>Win 95+ / OSX.1+</td>
+                    			<td class="center">-</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Presto</td>
+                    			<td>Opera 7.5</td>
+                    			<td>Win 95+ / OSX.2+</td>
+                    			<td class="center">-</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Presto</td>
+                    			<td>Opera 8.0</td>
+                    			<td>Win 95+ / OSX.2+</td>
+                    			<td class="center">-</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Presto</td>
+                    			<td>Opera 8.5</td>
+                    			<td>Win 95+ / OSX.2+</td>
+                    			<td class="center">-</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Presto</td>
+                    			<td>Opera 9.0</td>
+                    			<td>Win 95+ / OSX.3+</td>
+                    			<td class="center">-</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Presto</td>
+                    			<td>Opera 9.2</td>
+                    			<td>Win 88+ / OSX.3+</td>
+                    			<td class="center">-</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Presto</td>
+                    			<td>Opera 9.5</td>
+                    			<td>Win 88+ / OSX.3+</td>
+                    			<td class="center">-</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Presto</td>
+                    			<td>Opera for Wii</td>
+                    			<td>Wii</td>
+                    			<td class="center">-</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Presto</td>
+                    			<td>Nokia N800</td>
+                    			<td>N800</td>
+                    			<td class="center">-</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Presto</td>
+                    			<td>Nintendo DS browser</td>
+                    			<td>Nintendo DS</td>
+                    			<td class="center">8.5</td>
+                    			<td class="center">C/A<sup>1</sup></td>
+                    		</tr>
+                    		<tr class="gradeC">
+                    			<td>KHTML</td>
+                    			<td>Konqureror 3.1</td>
+                    			<td>KDE 3.1</td>
+                    			<td class="center">3.1</td>
+                    			<td class="center">C</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>KHTML</td>
+                    			<td>Konqureror 3.3</td>
+                    			<td>KDE 3.3</td>
+                    			<td class="center">3.3</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>KHTML</td>
+                    			<td>Konqureror 3.5</td>
+                    			<td>KDE 3.5</td>
+                    			<td class="center">3.5</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeX">
+                    			<td>Tasman</td>
+                    			<td>Internet Explorer 4.5</td>
+                    			<td>Mac OS 8-9</td>
+                    			<td class="center">-</td>
+                    			<td class="center">X</td>
+                    		</tr>
+                    		<tr class="gradeC">
+                    			<td>Tasman</td>
+                    			<td>Internet Explorer 5.1</td>
+                    			<td>Mac OS 7.6-9</td>
+                    			<td class="center">1</td>
+                    			<td class="center">C</td>
+                    		</tr>
+                    		<tr class="gradeC">
+                    			<td>Tasman</td>
+                    			<td>Internet Explorer 5.2</td>
+                    			<td>Mac OS 8-X</td>
+                    			<td class="center">1</td>
+                    			<td class="center">C</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Misc</td>
+                    			<td>NetFront 3.1</td>
+                    			<td>Embedded devices</td>
+                    			<td class="center">-</td>
+                    			<td class="center">C</td>
+                    		</tr>
+                    		<tr class="gradeA">
+                    			<td>Misc</td>
+                    			<td>NetFront 3.4</td>
+                    			<td>Embedded devices</td>
+                    			<td class="center">-</td>
+                    			<td class="center">A</td>
+                    		</tr>
+                    		<tr class="gradeX">
+                    			<td>Misc</td>
+                    			<td>Dillo 0.8</td>
+                    			<td>Embedded devices</td>
+                    			<td class="center">-</td>
+                    			<td class="center">X</td>
+                    		</tr>
+                    		<tr class="gradeX">
+                    			<td>Misc</td>
+                    			<td>Links</td>
+                    			<td>Text only</td>
+                    			<td class="center">-</td>
+                    			<td class="center">X</td>
+                    		</tr>
+                    		<tr class="gradeX">
+                    			<td>Misc</td>
+                    			<td>Lynx</td>
+                    			<td>Text only</td>
+                    			<td class="center">-</td>
+                    			<td class="center">X</td>
+                    		</tr>
+                    		<tr class="gradeC">
+                    			<td>Misc</td>
+                    			<td>IE Mobile</td>
+                    			<td>Windows Mobile 6</td>
+                    			<td class="center">-</td>
+                    			<td class="center">C</td>
+                    		</tr>
+                    		<tr class="gradeC">
+                    			<td>Misc</td>
+                    			<td>PSP browser</td>
+                    			<td>PSP</td>
+                    			<td class="center">-</td>
+                    			<td class="center">C</td>
+                    		</tr>
+                    		<tr class="gradeU">
+                    			<td>Other browsers</td>
+                    			<td>All others</td>
+                    			<td>-</td>
+                    			<td class="center">-</td>
+                    			<td class="center">U</td>
+                    		</tr>
+                    	</tbody>
+                    	<tfoot>
+                    		<tr>
+                    			<th>Rendering engine</th>
+                    			<th>Browser</th>
+                    			<th>Platform(s)</th>
+                    			<th>Engine version</th>
+                    			<th>CSS grade</th>
+                    		</tr>
+                    	</tfoot>
+                    </table>
+
                 </div>
                 <div class="col-lg-1">
                     <div class="block" style="height: 165px;">

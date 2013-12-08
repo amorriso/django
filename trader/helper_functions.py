@@ -72,6 +72,10 @@ def black_pricer(T, S, K, v, call = True):
     call, Bool, if True price a call option, if false price a put option
 
     '''
+
+    if not all([T, S, K, v]):
+        return None
+
     d1 = ( scipy.log(S/K) + ((v**2)/2.0)*T ) / ( v*(T**0.5) )
     d2 = d1 - v*(T**0.5)
 
@@ -79,6 +83,31 @@ def black_pricer(T, S, K, v, call = True):
         return S * stats.norm.cdf(d1) - K * stats.norm.cdf(d2)
     else:
         return K * stats.norm.cdf(-d2) - S * stats.norm.cdf(-d1)
+
+
+def black_delta(T, S, K, v, call = True):
+
+    '''
+    Calc. delta for a European options with bond future undlying.
+
+    T, float, time to expiry
+    S, float, underlying value
+    K, float, strike
+    v, float, vol
+    call, Bool, if True price a call option, if false price a put option
+
+    '''
+
+    if not all([T, S, K, v]):
+        return None
+
+    d1 = ( scipy.log(S/K) + ((v**2)/2.0)*T ) / ( v*(T**0.5) )
+    d2 = d1 - v*(T**0.5)
+
+    if call:
+        return stats.norm.cdf(d1)
+    else:
+        return -1 * stats.norm.cdf(-d1)
 
 
 def black_pricer_vol(T, S, K, Val, call = True, initialguess = None):
@@ -96,8 +125,7 @@ def black_pricer_vol(T, S, K, Val, call = True, initialguess = None):
 
     '''
 
-    pdb.set_trace()
-    if not any([T, S, K, Val]):
+    if not all([T, S, K, Val]):
         return None
 
     def function(vol):

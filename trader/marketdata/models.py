@@ -21,6 +21,19 @@ class Future(models.Model):
     def __unicode__(self):
         return self.name
 
+#class PublishOptionContract(models.Model):
+#    optiondefinition = models.ForeignKey(OptionDefinition)
+#    future = models.ForeignKey(Future)
+#    future_value = models.FloatField() 
+#    delta = models.FloatField() 
+#    strike = models.FloatField() 
+#    call_value = models.FloatField() 
+#    put_value = models.FloatField() 
+    
+
+
+    
+
 class OptionDefinition(models.Model):
     name = models.CharField(max_length=200)
     future = models.ForeignKey(Future)
