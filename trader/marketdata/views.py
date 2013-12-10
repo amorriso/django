@@ -83,16 +83,20 @@ def refresh_option(request, option_name):
             ask_delta = json.dumps([hf.black_delta(time2expiry, future.ask, K, vol, call) for K, vol, call in zip(strikes, ask_vols, callbool)])
     
             value_vols = [hf.black_pricer_vol(time2expiry, future.value, K, Val, call) for K, Val, call in zip(strikes, values, callbool)]
+
+            #interpolate on vol surface. Presently order 3 spline.
+            value_vols = hf.spline_interpolate(value_vols, strikes)
             value_delta = json.dumps([hf.black_delta(time2expiry, future.value, K, vol, call) for K, vol, call in zip(strikes, value_vols, callbool)])
-    
+
             last_trade_vols = [hf.black_pricer_vol(time2expiry, future.last_trade_value, K, Val, call) for K, Val, call in zip(strikes, last_trade_value, callbool)]
             json_last_trade_vols = json.dumps(last_trade_vols)
 
             return HttpResponse(json.dumps({
+                                            'future': future, 
                                             'option': option.name, 
                                             'strikes' : json_strikes,
                                             'bids' : bid_vols,
-                                            'bids_delta' : bid_delta,
+                                            'bids_delta' : json_bid_delta,
                                             'asks' : ask_vols,
                                             'asks_delta' : ask_delta,
                                             'values' : value_vols,
@@ -146,13 +150,17 @@ def option(request, option_name):
         # calc vols and deltas
         bid_vols = [hf.black_pricer_vol(time2expiry, future.bid, K, Val, call) for K, Val, call in zip(strikes, bids, callbool)]
         json_bid_vols = json.dumps(bid_vols)
-        bid_delta = json.dumps([hf.black_delta(time2expiry, future.bid, K, vol, call) for K, vol, call in zip(strikes, bid_vols, callbool)])
+        bid_delta = [hf.black_delta(time2expiry, future.bid, K, vol, call) for K, vol, call in zip(strikes, bid_vols, callbool)]
+        json_bid_delta = json.dumps(bid_delta)
 
         ask_vols = [hf.black_pricer_vol(time2expiry, future.ask, K, Val, call) for K, Val, call in zip(strikes, asks, callbool)]
         json_ask_vols = json.dumps(ask_vols)
         ask_delta = json.dumps([hf.black_delta(time2expiry, future.ask, K, vol, call) for K, vol, call in zip(strikes, ask_vols, callbool)])
 
         value_vols = [hf.black_pricer_vol(time2expiry, future.value, K, Val, call) for K, Val, call in zip(strikes, values, callbool)]
+
+        #interpolate on vol surface. Presently order 3 spline.
+        value_vols = hf.spline_interpolate(value_vols, strikes)
         json_value_vols = json.dumps(value_vols)
         value_delta = json.dumps([hf.black_delta(time2expiry, future.value, K, vol, call) for K, vol, call in zip(strikes, value_vols, callbool)])
 
@@ -160,16 +168,48 @@ def option(request, option_name):
         json_last_trade_vols = json.dumps(last_trade_vols)
         last_trade_delta = json.dumps([hf.black_delta(time2expiry, future.last_trade_value, K, vol, call) for K, vol, call in zip(strikes, last_trade_vols, callbool)])
 
+        # now for the "published" data
+        # ask Gareth about ... 
+        # when sourcing the data and adding this to the db, we calculate the ATM option using the mid of the bid - ask spread for the future value. Here when we calcuate 
+        # the stradle price we're going to use the future.bid price.
+        atm_strike = hf.ATM_strike(strikes, future.bid)
+        random_column = []
+        for pos, (v, s) in enumerate(zip(bid_vols, strikes)):
+            #if pos == 0:
+            #    random_column.append(future.bid)
+            if s == atm_strike:
+                random_column.append(hf.black_pricer(time2expiry, future.bid, s, v, call = True) + hf.black_pricer(time2expiry, future.bid, s, v, call = False)) 
+            else:
+                random_column.append('')
+
+        table_data = []
+        for p in xrange(len(random_column)):
+            table_data.append(
+                    (
+                        bid_delta[p],
+                        strikes[p],
+                        random_column[p],
+                        hf.black_pricer(time2expiry, future.bid, strikes[p], value_vols[p], True),
+                        hf.black_pricer(time2expiry, future.bid, strikes[p], value_vols[p], False),
+                        strikes[p],
+                        value_vols[p],
+                        '-'
+                    )
+                )
+
+
+
     except:
         raise Http404
 
     return render(
                     request, 'marketdata/option.html', 
                     {
+                        'future': future, 
                         'option': option, 
                         'strikes' : json_strikes,
                         'bids' : json_bid_vols,
-                        'bids_delta' : bid_delta,
+                        'bids_delta' : json_bid_delta,
                         'asks' : json_ask_vols,
                         'asks_delta' : ask_delta,
                         'values' : json_value_vols,
@@ -179,6 +219,8 @@ def option(request, option_name):
                         'last_trade_value' : json_last_trade_vols,
                         'last_trade_volume' : last_trade_volume,
                         'last_updated' : last_updated,
+                        'published' : False,
+                        'table_data' : table_data
                      }
                  )
 

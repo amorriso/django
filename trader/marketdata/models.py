@@ -21,18 +21,6 @@ class Future(models.Model):
     def __unicode__(self):
         return self.name
 
-#class PublishOptionContract(models.Model):
-#    optiondefinition = models.ForeignKey(OptionDefinition)
-#    future = models.ForeignKey(Future)
-#    future_value = models.FloatField() 
-#    delta = models.FloatField() 
-#    strike = models.FloatField() 
-#    call_value = models.FloatField() 
-#    put_value = models.FloatField() 
-    
-
-
-    
 
 class OptionDefinition(models.Model):
     name = models.CharField(max_length=200)
@@ -47,6 +35,7 @@ class OptionDefinition(models.Model):
 
     def __unicode__(self):
         return self.name + ', based on: ' + str(self.future)
+
 
 class OptionContract(models.Model):
     optiondefinition = models.ForeignKey(OptionDefinition)
@@ -67,45 +56,17 @@ class OptionContract(models.Model):
     last_updated = models.DateTimeField()
 
     
+class PublishOptionContract(models.Model):
+    optiondefinition = models.ForeignKey(OptionDefinition)
+    future = models.ForeignKey(Future)
+    future_value = models.FloatField() 
+    delta = models.FloatField() 
+    strike = models.FloatField() 
+    call_value = models.FloatField() 
+    put_value = models.FloatField() 
+    vol = models.FloatField()
+    previous_vol = models.FloatField()
+    change = models.FloatField()
+    publish_time = models.DateTimeField()
+    
 
-
-
-#class ContractCollection(models.Model):
-#
-#    contract_name = models.CharField(max_length=200)
-#    option_type = models.CharField(max_length=200,choices = [('Call','Call'),('Put','Put')])
-#    month_tag = models.CharField(max_length=200)
-#    expiry_date = models.DateTimeField('Contract Expiry')
-#    future = models.CharField(max_length=200) 
-#    future_value = models.FloatField() 
-#    min_strike = models.FloatField(default = 0.0)
-#    max_strike = models.FloatField(default = 0.0)
-#    strike_interval = models.FloatField(default = 0.0)
-#
-#    num_strikes = int( (float(max_strike) - float(min_strike)) / float(strike_interval) )
-#    strike = min_strike
-#    for i in range(0, num_strikes, 1):
-#        Contract(collection = contract_name, future = future, expiry = expiry_date).save()
-#        strike += strike_interval 
-#
-#    #def __unicode__(self):
-#    #    pass
-#
-#
-#class Contract(models.Model):
-#
-#    collection = models.ForeignKey(ContractCollection)
-#    future = models.CharField(max_length=200) 
-#    future_value = models.FloatField(default = 0.0) 
-#    strike = models.FloatField()
-#    premium = models.FloatField() 
-#    vol = models.FloatField()
-#    expiry = models.DateTimeField('Contract Expiry')
-#
-#    #def __unicode__(self):
-#    #    ostring = 'Month: ' + self.month + ', Strike: ' + \
-#    #            str(self.strike) + ', Expiry: ' + str(self.expiry)
-#    #    return ostring 
-#
-#
-#

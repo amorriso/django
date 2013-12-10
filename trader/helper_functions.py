@@ -4,6 +4,7 @@ import datetime
 import scipy
 import scipy.stats as stats
 import scipy.optimize as opt
+import scipy.interpolate as interpolate
 import datetime
 import pdb
 
@@ -20,20 +21,25 @@ def sql_clean(istring):
 
     return istring
 
+
 def diff_dates_year_fraction(date, base_date, day_count = 365):
     if type(date) == type(datetime.datetime.today()):
         date = date.date()
     return (date - base_date).days / float(day_count)
 
+
 def sqldate2datetime(date):
     return datetime.datetime.strptime(date[:10], "%Y-%m-%d")
+
 
 def date2datetime(date):
     return datetime.datetime.combine(date, datetime.datetime.min.time())
 
+
 def datetime2date(datet):
     return datetime.date(*datetime.datetime.timetuple(datet)[0:3])
     
+
 def argsort(inputlist):
 
     '''
@@ -143,3 +149,75 @@ def black_pricer_vol(T, S, K, Val, call = True, initialguess = None):
         raise ValueError(message)
         
     return impliedvol[0]
+
+
+def spline_interpolate(series, index, order = 3):
+
+    '''
+    
+    Given a list with non-finite values (missing data) fill in the missing data using a 
+    spline interpolation routine. Note that if the number of valid points is less than 
+    the order of the interpolation you require, this routine will just hand back the 
+    input series list. This is because you can't fit a spline or order n with less than
+    n points.
+
+    Inputs:
+        series -> list with NaN's you'd like to replace with spline interpolated values
+        index -> list index values (like the x-axis)
+        order -> int, the order used to fit the spline.
+
+    Outputs:
+        list with interpolated values replacing the NaNs.
+
+    >>> [scipy.round_(i, decimals = 9) for i in spline_interpolate([9, 4, None, None, None, 4, 9], [-3, -2, -1, 0, 1, 2, 3])]
+    [9.0, 4.0, 1.0, 0.0, 1.0, 4.0, 9.0]
+
+    '''
+
+    if series.count(None) < order:
+        #message = "You're attempting to interpolate a curve but your input curve has less VALID points "+\
+        #        "than the order of the spline fitting! This is firstly impossible and secondly can't be handled by the code."
+        #raise ValueError(message)
+        return series
+
+    for pos, s in enumerate(series):
+        try:
+            isfinite = scipy.isfinite(s)
+        except:
+            series[pos] = scipy.NaN
+
+    
+    xspline = [i for i, s in zip(index, series) if scipy.isfinite(s)]
+    x = [i for i in index]
+    yspline = [s for s in series if scipy.isfinite(s)]
+    s = interpolate.InterpolatedUnivariateSpline(xspline, yspline, k = order)
+    spline_series = [s(i).item() for i in x]
+
+    return spline_series
+
+
+def ATM_strike(strikes, value):
+    
+    '''
+    >>> ATM_strike([100, 110, 120, 130, 140, 150], 115)
+    110
+    >>> ATM_strike([100, 110, 120, 130, 140, 150], 115.0001)
+    120
+
+    '''
+
+    distance = [abs(s - value) for s in strikes]
+    min_distance = 100000000000.0
+    min_pos = -1
+    for pos, d in enumerate(distance):
+        if d < min_distance:
+            min_distance = d
+            min_pos = pos 
+
+    return strikes[min_pos]
+
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
