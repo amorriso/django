@@ -48,6 +48,9 @@ function freezeData() {
             freeze_chart.series[6].setVisible(false);
             freeze_chart.series[7].setData(data.values_delta, true);
             freeze_chart.series[7].setVisible(false);
+            var now = new Date();
+            document.getElementById("frozen-market-data-heading").innerHTML = "Frozen Market Data: " + now.format("Y-m-d H:i:s");
+            document.getElementById("frozen-market-data-heading").style.color = "red";
 		},
 		cache: false
     });
@@ -263,7 +266,10 @@ $(function () {
         <script src="{{STATIC_URL}}DataTables/media/js/jquery.dataTables.js"></script>
         <script type="text/javascript" charset="utf-8">
 			$(function() {
-				$('#example').dataTable();
+				$('#example').dataTable({
+                    "aaSorting": [],
+                    "iDisplayLength": 100
+                });
 			});
 		</script>
 	</head>
@@ -325,7 +331,7 @@ $(function () {
     <div class="row">
         <div class="row"> 
             <div class="page-header">
-                <h1>
+                <h1 id="frozen-market-data-heading">
                     Frozen Market Data
                 </h1>
             </div>
@@ -348,9 +354,14 @@ $(function () {
     <div class="row">
         <div class="row"> 
             <div class="page-header">
-                <h1>
-                    Publish Data: {{option.name}}<br /> Underlying: {{future.name}}
-                </h1>
+                {% if published %}
+                    <h1 style="color:red">
+                        Published Data: {{option.name}}<br /> Published Time: {{published_time}} <br />Underlying: {{future.name}}
+                {% else %}
+                    <h1 style="color:green">
+                        UnPublished Data: {{option.name}}<br /> Underlying: {{future.name}}
+                    </h1>
+                {% endif %}
             </div>
         </div>
         <div class="container">
