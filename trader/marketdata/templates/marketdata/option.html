@@ -3,13 +3,8 @@
 <title>Option: {{ option.name }} </title>
 {% endblock %}
 {% block content %}  
-function getDataOld(option_name) {
-    var retvalue = {{ asks }};
-    // ajax goes here
-    return retvalue;
-}
+
 function getData() {
-    var result = [];
     $.ajax({
         url: "/marketdata/option/refresh/{{option.name}}/",
         data: {option_name: "{{option.name}}"},
@@ -20,14 +15,14 @@ function getData() {
             live_chart.series[1].setData(data.asks, true);
             live_chart.series[2].setData(data.values, true);
             live_chart.series[3].setData(data.last_trade_value, true);
-            setTimeout(getData, 1000);
+            //setTimeout(getData, 1000);
+            setTimeout(getData, 10000000000);
 		},
 		cache: false
     });
 }
 
 function freezeData() {
-    var result = [];
     $.ajax({
         url: "/marketdata/option/refresh/{{option.name}}/",
         data: {option_name: "{{option.name}}"},
@@ -55,6 +50,35 @@ function freezeData() {
 		cache: false
     });
 }
+
+function populateTable() {
+    var table = $('#publish-table').dataTable();
+    // Immediately 'nuke' the current rows (perhaps waiting for an Ajax callback...)
+    table.fnClearTable();
+    $.ajax({
+        url: "/marketdata/option/refresh-table/{{option.name}}/",
+        data: {option_name: "{{option.name}}",
+               vols: freeze_chart.series[2].yData,
+               strikes: freeze_chart.xAxis[0].categories},
+        type: 'POST',
+        dataType: "json",
+        success: function(data) {
+            //freeze_chart.series[7].setData(data.values_delta, true);
+            //document.getElementById("frozen-market-data-heading").innerHTML = "Frozen Market Data: " + now.format("Y-m-d H:i:s");
+            //document.getElementById("frozen-market-data-heading").style.color = "red";
+		},
+		cache: false
+    });
+
+//    table.fnAddData( [
+//        giCount+".1",
+//        giCount+".2",
+//        giCount+".3",
+//        giCount+".4" ]
+//    );
+
+}
+
 
 $(document).ready(function () {
 
@@ -266,7 +290,7 @@ $(function () {
         <script src="{{STATIC_URL}}DataTables/media/js/jquery.dataTables.js"></script>
         <script type="text/javascript" charset="utf-8">
 			$(function() {
-				$('#example').dataTable({
+				$('#publish-table').dataTable({
                     "aaSorting": [],
                     "iDisplayLength": 100
                 });
@@ -344,7 +368,7 @@ $(function () {
                 <div class="col-lg-1">
                     <div class="block" style="height: 165px;">
                         <div class="centered">
-                            <button type="button" class="btn btn-lg btn-danger">Populate Table</button>
+                            <button type="button" class="btn btn-lg btn-warning" onclick="return populateTable();">Populate Table</button>
                         </div>
                     </div>
                 </div>
@@ -367,46 +391,48 @@ $(function () {
         <div class="container">
             <div class="row">    
                 <div class="col-lg-10">
+                    <div class="container">
 
-                    <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
-                    	<thead>
-                    		<tr>
-                                <th>Delta</th>
-                    			<th>Strike</th>
-                                <th></th>
-                    			<th>Call</th>
-                    			<th>Put</th>
-                    			<th>Strike</th>
-                    			<th>Imp. Vol.</th>
-                    			<th>Change</th>
-                    		</tr>
-                    	</thead>
-                	    <tbody>
-                            {% for row in table_data %}
-                                {% if published %}
-                		            <tr class="gradeX">
-                                {% else %}
-                		            <tr class="gradeA">
-                                {% endif %}
-                                {% for e in row %}
-                                    <td>{{e}}</td>
+                        <table cellpadding="0" cellspacing="0" border="0" class="display" id="publish-table">
+                        	<thead>
+                        		<tr>
+                                    <th>Delta</th>
+                        			<th>Strike</th>
+                                    <th></th>
+                        			<th>Call</th>
+                        			<th>Put</th>
+                        			<th>Strike</th>
+                        			<th>Imp. Vol.</th>
+                        			<th>Change</th>
+                        		</tr>
+                        	</thead>
+                    	    <tbody>
+                                {% for row in table_data %}
+                                    {% if published %}
+                    		            <tr class="gradeX">
+                                    {% else %}
+                    		            <tr class="gradeA">
+                                    {% endif %}
+                                    {% for e in row %}
+                                        <td>{{e}}</td>
+                                    {% endfor %}
+                    		        </tr>
                                 {% endfor %}
-                		        </tr>
-                            {% endfor %}
-                	    </tbody>
-                	    <tfoot>
-                		    <tr>
-                                <th>Delta</th>
-                    			<th>Strike</th>
-                                <th></th>
-                    			<th>Call</th>
-                    			<th>Put</th>
-                    			<th>Strike</th>
-                    			<th>Imp. Vol.</th>
-                    			<th>Change</th>
-                		    </tr>
-                	    </tfoot>
-                    </table>
+                    	    </tbody>
+                    	    <tfoot>
+                    		    <tr>
+                                    <th>Delta</th>
+                        			<th>Strike</th>
+                                    <th></th>
+                        			<th>Call</th>
+                        			<th>Put</th>
+                        			<th>Strike</th>
+                        			<th>Imp. Vol.</th>
+                        			<th>Change</th>
+                    		    </tr>
+                    	    </tfoot>
+                        </table>
+                    </div>
 
                 </div>
                 <div class="col-lg-1">

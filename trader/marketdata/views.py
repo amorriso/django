@@ -40,6 +40,60 @@ def detail(request, future):
 
     return render(request, 'marketdata/detail.html', {'future': future})
 
+
+@csrf_exempt
+def refresh_table(request, option_name):
+    
+    try:
+        print " ------------------------------------------------------------------------------ "
+        print request.POST
+        print " ------------------------------------------------------------------------------ "
+        print request.is_ajax()
+        print " ------------------------------------------------------------------------------ "
+        
+        if request.is_ajax() and request.POST:
+            option_name = request.POST['option_name']
+            options = OptionDefinition.objects.all()
+            option = [o for o in options if o.name == option_name][0]
+            optioncontracts = sorted(
+                OptionContract.objects.filter(optiondefinition_id=option.id), 
+                key = lambda x : x.strike)
+
+            published_options = sorted(
+                    PublishOptionContract.objects.filter(optiondefinition_id=option.id),
+                    key = lambda x : x.strike)
+
+            future = option.future
+            today = datetime.date.today()
+            time2expiry = hf.diff_dates_year_fraction(option.expiry_date, today)
+
+            strikes = [float(i) for i in request.POST.getlist('strikes[]')]
+            json_strikes = json.dumps(strikes)
+            vols = [float(i) for i in request.POST.getlist('vols[]')]
+            call_values = [hf.black_pricer(time2expiry, future.bid, K, v, call = True) for K, v in zip(strikes, vols)]
+            put_values = [hf.black_pricer(time2expiry, future.bid, K, v, call = False) for K, v in zip(strikes, vols)]
+            call_deltas = [hf.black_delta(time2expiry, future.bid, K, v, call = True) for K, v, in zip(strikes, vols)]
+
+            # got to calculate the changes now
+    
+            return HttpResponse(json.dumps({ 
+                                            'option': option.name, 
+                                            'strikes' : json_strikes,
+                                            'call_values' : call_values,
+                                            'put_values' : put_values,
+                                            'deltas' : delta,
+                                            'vols' : vols,
+                                            'changes' : [],
+                                            }), mimetype="application/json" )
+        else:
+            print "else raise"
+            raise Http404
+
+    except Exception as e:
+        print e
+        raise Http404
+
+
 @csrf_exempt
 def refresh_option(request, option_name):
     
@@ -78,25 +132,23 @@ def refresh_option(request, option_name):
             # calc vols and deltas
             bid_vols = [hf.black_pricer_vol(time2expiry, future.bid, K, Val, call) for K, Val, call in zip(strikes, bids, callbool)]
             bid_delta = [hf.black_delta(time2expiry, future.bid, K, vol, call) for K, vol, call in zip(strikes, bid_vols, callbool)]
-            json_bid_delta = json.dumps(bid_delta)
     
             ask_vols = [hf.black_pricer_vol(time2expiry, future.ask, K, Val, call) for K, Val, call in zip(strikes, asks, callbool)]
-            ask_delta = json.dumps([hf.black_delta(time2expiry, future.ask, K, vol, call) for K, vol, call in zip(strikes, ask_vols, callbool)])
+            ask_delta = [hf.black_delta(time2expiry, future.ask, K, vol, call) for K, vol, call in zip(strikes, ask_vols, callbool)]
     
             value_vols = [hf.black_pricer_vol(time2expiry, future.value, K, Val, call) for K, Val, call in zip(strikes, values, callbool)]
 
             #interpolate on vol surface. Presently order 3 spline.
             value_vols = hf.spline_interpolate(value_vols, strikes)
-            value_delta = json.dumps([hf.black_delta(time2expiry, future.value, K, vol, call) for K, vol, call in zip(strikes, value_vols, callbool)])
+            value_delta = [hf.black_delta(time2expiry, future.value, K, vol, call) for K, vol, call in zip(strikes, value_vols, callbool)]
 
             last_trade_vols = [hf.black_pricer_vol(time2expiry, future.last_trade_value, K, Val, call) for K, Val, call in zip(strikes, last_trade_value, callbool)]
-            json_last_trade_vols = json.dumps(last_trade_vols)
 
             return HttpResponse(json.dumps({ 
                                             'option': option.name, 
                                             'strikes' : json_strikes,
                                             'bids' : bid_vols,
-                                            'bids_delta' : json_bid_delta,
+                                            'bids_delta' : bid_delta,
                                             'asks' : ask_vols,
                                             'asks_delta' : ask_delta,
                                             'values' : value_vols,
@@ -114,8 +166,7 @@ def refresh_option(request, option_name):
     except Exception as e:
         print e
         raise Http404
-
-    
+   
     
 def option(request, option_name):
 
