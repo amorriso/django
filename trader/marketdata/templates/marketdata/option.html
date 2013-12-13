@@ -45,7 +45,7 @@ function freezeData() {
             freeze_chart.series[7].setVisible(false);
             var now = new Date();
             document.getElementById("frozen-market-data-heading").innerHTML = "Frozen Market Data: " + now.format("Y-m-d H:i:s");
-            document.getElementById("frozen-market-data-heading").style.color = "red";
+            document.getElementById("frozen-market-data-heading").style.color = "green";
 		},
 		cache: false
     });
@@ -55,6 +55,9 @@ function populateTable() {
     var table = $('#publish-table').dataTable();
     // Immediately 'nuke' the current rows (perhaps waiting for an Ajax callback...)
     table.fnClearTable();
+    var now = new Date();
+    document.getElementById("publish-table-heading").innerHTML = "Unpublished Data: {{option.name}}<br /> Underlying: {{future.name}}<br /> Populated @: " + now.format("Y-m-d H:i:s");
+    document.getElementById("publish-table-heading").style.color = "orange";
     $.ajax({
         url: "/marketdata/option/refresh-table/{{option.name}}/",
         data: {option_name: "{{option.name}}",
@@ -63,19 +66,24 @@ function populateTable() {
         type: 'POST',
         dataType: "json",
         success: function(data) {
+            table.fnAddData(data.first_row);
+            for (var i = 0; i < data.strikes.length; i++) 
+            {
+                table.fnAddData([
+                    data.deltas[i],
+                    data.strikes[i],
+                    data.random_column[i],
+                    data.call_values[i],
+                    data.put_values[i],
+                    data.strikes[i],
+                    data.vols[i],
+                    data.changes[i]
+                ])
+            }
             //freeze_chart.series[7].setData(data.values_delta, true);
-            //document.getElementById("frozen-market-data-heading").innerHTML = "Frozen Market Data: " + now.format("Y-m-d H:i:s");
-            //document.getElementById("frozen-market-data-heading").style.color = "red";
 		},
 		cache: false
     });
-
-//    table.fnAddData( [
-//        giCount+".1",
-//        giCount+".2",
-//        giCount+".3",
-//        giCount+".4" ]
-//    );
 
 }
 
@@ -293,6 +301,10 @@ $(function () {
 				$('#publish-table').dataTable({
                     "aaSorting": [],
                     "iDisplayLength": 100
+                    //"fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+                    //    nRow.className = "gradeX odd";
+                    //    return nRow;   
+                    //}
                 });
 			});
 		</script>
@@ -379,11 +391,11 @@ $(function () {
         <div class="row"> 
             <div class="page-header">
                 {% if published %}
-                    <h1 style="color:red">
+                    <h1 style="color:red" id="publish-table-heading">
                         Published Data: {{option.name}}<br /> Published Time: {{published_time}} <br />Underlying: {{future.name}}
                 {% else %}
-                    <h1 style="color:green">
-                        UnPublished Data: {{option.name}}<br /> Underlying: {{future.name}}
+                    <h1 style="color:green" id="publish-table-heading">
+                        Unpublished Data: {{option.name}}<br /> Underlying: {{future.name}}
                     </h1>
                 {% endif %}
             </div>
@@ -438,7 +450,7 @@ $(function () {
                 <div class="col-lg-1">
                     <div class="block" style="height: 165px;">
                         <div class="centered">
-                            <button type="button" class="btn btn-lg btn-danger">Publish</button>
+                            <button type="button" class="btn btn-lg btn-danger" onclick="return publishTable();">Publish</button>
                         </div>
                     </div>
                 </div>
