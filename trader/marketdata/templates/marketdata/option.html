@@ -88,6 +88,30 @@ function populateTable() {
 }
 
 
+function publishTable() {
+    $.ajax({
+        url: "/marketdata/option/publish-table/{{option.name}}/",
+        data: {option_name: "{{option.name}}",
+               vols: freeze_chart.series[2].yData,
+               strikes: freeze_chart.xAxis[0].categories},
+        type: 'POST',
+        dataType: "json",
+        success: function(data) {
+            if (data.Success){
+                var now = new Date();
+                document.getElementById("publish-table-heading").innerHTML = "Published Data: {{option.name}}<br /> Underlying: {{future.name}}<br /> Published @: " + now.format("Y-m-d H:i:s");
+                document.getElementById("publish-table-heading").style.color = "Red";
+            } else {
+                populateTable();
+                alert("Failed to publish data!");
+            }
+		},
+		cache: false
+    });
+
+}
+
+
 $(document).ready(function () {
 
     live_chart = new Highcharts.Chart({

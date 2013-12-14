@@ -7,6 +7,7 @@ import datetime
 import json
 import helper_functions as hf
 import scipy
+import pdb
 
 from marketdata.models import *
 
@@ -115,6 +116,80 @@ def refresh_table(request, option_name):
     except Exception as e:
         print e
         raise Http404
+
+
+@csrf_exempt
+def publish_table(request, option_name):
+    
+    try:
+        print " ------------------------------------------------------------------------------ "
+        print request.POST
+        print " ------------------------------------------------------------------------------ "
+        print request.is_ajax()
+        print " ------------------------------------------------------------------------------ "
+        
+        if request.is_ajax() and request.POST:
+            option_name = request.POST['option_name']
+            options = OptionDefinition.objects.all()
+            option = [o for o in options if o.name == option_name][0]
+
+            optioncontracts = sorted(
+                OptionContract.objects.filter(optiondefinition_id=option.id), 
+                key = lambda x : x.strike)
+
+            published_options = sorted(
+                    PublishOptionContract.objects.filter(optiondefinition_id=option.id),
+                    key = lambda x : x.strike)
+
+            future = option.future
+            today = datetime.date.today()
+            time2expiry = hf.diff_dates_year_fraction(option.expiry_date, today)
+
+            # we need to know the last vol to calculate the change, we store this in a dict 
+            # accessed by strike value 
+            published_options_dict = dict([(i.strike, i.vol) for i in published_options])
+
+            strikes = [float(i) for i in request.POST.getlist('strikes[]')]
+            #json_strikes = json.dumps(strikes)
+            vols = [float(i) for i in request.POST.getlist('vols[]')]
+            call_values = [hf.black_pricer(time2expiry, future.bid, K, v, call = True) for K, v in zip(strikes, vols)]
+            put_values = [hf.black_pricer(time2expiry, future.bid, K, v, call = False) for K, v in zip(strikes, vols)]
+            call_deltas = [hf.black_delta(time2expiry, future.bid, K, v, call = True) for K, v, in zip(strikes, vols)]
+
+            changes = []
+            for s, v in zip(strikes, vols):
+                if s in published_options_dict:
+                    changes.append(v - published_options_dict[s])
+                else:
+                    changes.append(0.0)
+
+            for o in published_options:
+                o.delete()
+
+            publish_time = datetime.datetime.now()
+            for s, v, cval, pval, cdelta, c in zip(strikes, vols, call_values, put_values, call_deltas, changes): 
+
+                if s in published_options_dict:
+                    previous_vol = published_option_dict[s]
+                else:
+                    previous_vol = -99
+
+                option.publishoptioncontract_set.create(future_id = option.future_id, future_value = future.bid, 
+                        delta = cdelta, strike = s, call_value = cval, put_value = pval, vol = v, 
+                        previous_vol = previous_vol, change = c, publish_time = publish_time) 
+    
+            return HttpResponse(json.dumps({ 
+                                            'Success': True, 
+                                            }), mimetype="application/json" )
+        else:
+            return HttpResponse(json.dumps({ 
+                                            'Success': False, 
+                                            }), mimetype="application/json" )
+
+    except Exception as e:
+        return HttpResponse(json.dumps({ 
+                                        'Success': False, 
+                                        }), mimetype="application/json" )
 
 
 @csrf_exempt
