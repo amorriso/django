@@ -1,0 +1,254 @@
+{% extends "marketdata/highchartsbase.html" %}
+{% block title %}
+<title>Published Prices</title>
+{% endblock %}
+{% block content %}  
+
+var charts = [];
+
+$(document).ready(function () {
+
+    var getChartConfig = function(renderId, title, strikes, bids, asks, fvalues, lastvalues, published_vols) {
+        var config = {};
+        config.chart = {
+            renderTo: renderId,
+            animation: Highcharts.svg // don't animate in old IE
+        };
+        config.exporting = {
+            buttons : {
+                contextButtons: {
+                    enabled: false,
+                    menuItems: null
+                }
+            },
+            enabled: false
+        };
+        config.title = {
+            text: title,
+            x: -20 //center
+        };
+        config.subtitle = {
+            text: '',
+            x: -20
+        };
+        config.xAxis = {
+            categories: strikes,
+            title: {text: "Strike"},
+            tickmarkPlacement: 'on'
+        };
+        config.yAxis = {
+            title: {
+                text: 'Vol'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        };
+        config.tooltip = {
+            valueSuffix: ''
+        };
+        config.legend = {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        };
+        config.series = [{
+            name: 'Bids',
+            data: bids,
+            lineWidth : 0
+        }, {
+            name: 'Asks',
+            data: asks,
+            lineWidth : 0
+        }, {
+            name: 'Fair Value',
+            data: fvalues
+        }, {
+            name: 'Last Trade',
+            data: lastvalues,
+            lineWidth : 0
+        }, {
+            name: 'Published',
+            data: published_vols
+        }];
+        return config;
+    };
+
+    
+    {% if futuredict %}
+        {% for future, optiondefs in futuredict.items %}
+            {% for option, data in optiondefs.items %}
+                {% if data.published %}
+                    charts.push(new Highcharts.Chart(
+                    getChartConfig("{{option.name}}", "{{option.name}}", {{data.strikes}}, {{data.bid_vols}}, {{data.ask_vols}}, {{data.value_vols}}, {{data.last_trade_vols}}, {{data.published_vols}})
+                    ))
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+});
+
+		</script>
+        <style type="text/css" title="currentStyle">
+			@import "{{STATIC_URL}}DataTables/media/css/demo_page.css";
+			@import "{{STATIC_URL}}DataTables/media/css/demo_table.css";
+		</style>
+        <script src="{{STATIC_URL}}DataTables/media/js/jquery.dataTables.js"></script>
+        <script type="text/javascript" charset="utf-8">
+			//$(function() {
+            $(document).ready(function () {
+				$('.dataTable').dataTable({
+                    "aaSorting": [],
+                    "iDisplayLength": 100,
+                    "bFilter": false,
+                    "bLengthChange": false,
+                    "bPaginate": false,
+                    "oLanguage": {
+                        "sInfo": ""
+                    }
+                });
+			});
+		</script>
+	</head>
+	<body>
+    <script src="{{STATIC_URL}}highcharts/js/highcharts.js"></script>
+    <script src="{{STATIC_URL}}highcharts/js/draggable-points.js"></script>
+    <script src="{{STATIC_URL}}highcharts/js/modules/exporting.js"></script>
+
+
+<!-- Fixed navbar -->
+<div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/marketdata/">GW</a>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="/marketdata/">Futures</a></li>
+        <li class="active"><a href="/marketdata/published-tables/">Published</a></li>
+        <li><a href="/admin/">Admin</a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</div>
+
+<script src="{{STATIC_URL}}highcharts/js/highcharts.js"></script>
+<script src="{{STATIC_URL}}highcharts/js/modules/exporting.js"></script>
+
+<div class="container theme-showcase">
+  {% if futuredict %}
+    {% for future, optiondefs in futuredict.items %}
+    <div class="col-sm-12">
+      <div class="panel panel-danger">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{future.name}}</h3>
+        </div>
+        <div class="panel-body">
+            {% for option, data in optiondefs.items %}
+            <div class="row">
+                <div class="col-sm-8 pull-left"> 
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Published Table: {{option.name}}</h3>
+                        </div>
+                        <div class="panel-body">
+                            {% if data.published %}
+                                <div class="well">
+                                    <table cellpadding="0" cellspacing="0" border="0" class="display dataTable">
+                                        <thead>
+                                            <tr style="font-size:9px">
+                                                <th style="font-size:9px">Strike</th>
+                                                <th style="font-size:9px">Call</th>
+                                                <th style="font-size:9px">Put</th>
+                                                <th style="font-size:9px">Stradle</th>
+                                                <th style="font-size:9px">Call Delta</th>
+                                                <th style="font-size:9px">Put Delta</th>
+                                                <th style="font-size:9px">Gamma</th>
+                                                <th style="font-size:9px">Theta</th>
+                                                <th style="font-size:9px">Vega</th>
+                                                <th style="font-size:9px">Imp. Vol.</th>
+                                                <th style="font-size:9px">Change</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for row in data.table_data %}
+                                        <tr class="gradeC">
+                                        {% for e in row %}
+                                            <td style="font-size:9px">{{e}}</td>
+                                        {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr style="font-size:9px">
+                                                <th style="font-size:9px">Strike</th>
+                                                <th style="font-size:9px">Call</th>
+                                                <th style="font-size:9px">Put</th>
+                                                <th style="font-size:9px">Stradle</th>
+                                                <th style="font-size:9px">Call Delta</th>
+                                                <th style="font-size:9px">Put Delta</th>
+                                                <th style="font-size:9px">Gamma</th>
+                                                <th style="font-size:9px">Theta</th>
+                                                <th style="font-size:9px">Vega</th>
+                                                <th style="font-size:9px">Imp. Vol.</th>
+                                                <th style="font-size:9px">Change</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="well text-center">
+                                    <h2>
+                                        No published data
+                                    </h2>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8 pull-right"> 
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Live Comparison: {{option.name}}</h3>
+                        </div>
+                        <div class="panel-body">
+                            {% if data.published %}
+                                <div id="{{option.name}}" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                            {% else %}
+                                <div class="well text-center">
+                                    <h2>
+                                        No published data
+                                    </h2>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="jumbotron">
+      <h1>No futures to Display.</h1>
+    </div>
+  {% endif %}
+
+</div> <!-- /container -->
+
+	</body>
+</html>
+
+{% endblock %}

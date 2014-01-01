@@ -15,6 +15,8 @@ urlpatterns = patterns('',
     url(r'^option/refresh-table/(?P<option_name>\w+)/$', views.refresh_table, name='refresh_table'),
     # /marketdata/option/OPTIONNAME/publish-table (ajax)
     url(r'^option/publish-table/(?P<option_name>\w+)/$', views.publish_table, name='publish_table'),
+    # /marketdata/published
+    url(r'^published-tables/', views.published, name='published'),
 )
 
 

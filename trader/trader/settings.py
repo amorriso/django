@@ -12,6 +12,8 @@ SITE_ROOT = os.path.dirname(DJANGO_ROOT)
 # Site name:
 SITE_NAME = os.path.basename(DJANGO_ROOT)
 
+LOGIN_URL = "/admin"
+
 # Add our project to our pythonpath, this way we don't need to type our project
 # name in our dotted import paths:
 sys.path.append(DJANGO_ROOT)
@@ -28,11 +30,13 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'trader/db/marketdata.db',                      # Or path to database file if using sqlite3.
+        #'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        #'NAME': 'trader/db/marketdata.db',                      # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'marketdata',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
+        'USER': 'test',
+        'PASSWORD': 'test',
         'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '',                      # Set to empty string for default.
     }
@@ -129,7 +133,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    [os.path.join(SITE_ROOT,'templates')]
+    [os.path.join(DJANGO_ROOT,'templates'), os.path.join(DJANGO_ROOT,'trader', 'templates')]
 )
 
 INSTALLED_APPS = (
