@@ -4,15 +4,51 @@
 {% endblock %}
 {% block content %}  
 
+function getPubData(option_name_position) {
+
+    // NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE 
+
+    // NOTE NOTE Published prices does not automagically update. Just the market prices. Why?
+    // Because I haven't implemented it. See below, we don't update charts[position].series[4]
+    // (which would be the published prices)
+
+    // NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE 
+    
+    var split_start = option_name_position.indexOf("|||");
+    var option_name = option_name_position.slice(0,split_start);
+    var position = option_name_position.slice(split_start + 3, option_name_position.length);
+
+    $.ajax({
+        url: "/marketdata/option/refresh/" + option_name + "/",
+        data: {option_name: option_name},
+        type: 'POST',
+        dataType: "json",
+        success: function(data) {
+            charts[position].series[0].setData(data.bids, true);
+            charts[position].series[1].setData(data.asks, true);
+            charts[position].series[2].setData(data.values, true);
+            charts[position].series[3].setData(data.last_trade_value, true);
+
+            setTimeout(getPubData, 2000, option_name_position);
+            //setTimeout(getPubData, 10000000000, option_name_position);
+		},
+		cache: false
+    });
+}
+
+
 var charts = [];
 
 $(document).ready(function () {
 
-    var getChartConfig = function(renderId, title, strikes, bids, asks, fvalues, lastvalues, published_vols) {
+    var getChartConfig = function(renderId, title, strikes, bids, asks, fvalues, lastvalues, published_vols, position) {
         var config = {};
         config.chart = {
             renderTo: renderId,
-            animation: Highcharts.svg // don't animate in old IE
+            animation: Highcharts.svg, // don't animate in old IE
+            events: {
+                load: getPubData(title + "|||" + position)
+			}
         };
         config.exporting = {
             buttons : {
@@ -83,7 +119,7 @@ $(document).ready(function () {
             {% for option, data in optiondefs.items %}
                 {% if data.published %}
                     charts.push(new Highcharts.Chart(
-                    getChartConfig("{{option.name}}", "{{option.name}}", {{data.strikes}}, {{data.bid_vols}}, {{data.ask_vols}}, {{data.value_vols}}, {{data.last_trade_vols}}, {{data.published_vols}})
+                    getChartConfig("{{option.name}}", "{{option.name}}", {{data.strikes}}, {{data.bid_vols}}, {{data.ask_vols}}, {{data.value_vols}}, {{data.last_trade_vols}}, {{data.published_vols}}, {{data.counter}})
                     ))
                 {% endif %}
             {% endfor %}
@@ -128,13 +164,13 @@ $(document).ready(function () {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="/marketdata/">GW</a>
+      <a class="navbar-brand" href="/">Client Site</a>
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li><a href="/marketdata/">Futures</a></li>
         <li class="active"><a href="/marketdata/published-tables/">Published</a></li>
-        <li><a href="/admin/">Admin</a></li>
+        <li><a href="/admin/">Contract & Site Admin</a></li>
       </ul>
     </div><!--/.nav-collapse -->
   </div>

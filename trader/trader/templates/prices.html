@@ -1,6 +1,6 @@
 {% extends "base-head.html" %}
 {% block title %}
-<title>Home!</title>
+<title>Contract Prices</title>
 {% endblock %}
   </head>
 
@@ -20,64 +20,65 @@
       <ul class="nav navbar-nav">
         <li><a onclick="return postShowing();">Selection</a></li>
         <li class="active"><a>Prices</a></li>
-        <li><a href="/admin/">Admin</a></li>
+        <!--<li><a href="/admin/">Admin</a></li>-->
       </ul>
     </div><!--/.nav-collapse -->
   </div>
 </div>
 
 <div class="container theme-showcase">
-    {% if futuredict %}
+    {% if containsdata %}
         {% for future, optiondefs in futuredict.items %}
             <div class="col-sm-12">
                 {% for option, data in optiondefs.items %}
                     <div class="row">
-                        <div class="col-sm-8 pull-left"> 
+                        <div class="col-sm-1"></div> 
+                        <div class="col-sm-10"> 
                             <div class="panel panel-success">
                                 <div class="panel-heading">
-                                    <h3 class="panel-title" name="option" id="{{option.name}}">Option Prices: {{option.name}}, Underlying: {{future.name}}</h3>
+                                    <h3 class="panel-title" name="option" id="{{option.name}}">{{option.name}}, Underlying: {{future.name}}, Current Bid: {{future.bid}}</h3>
                                 </div>
                                 <div class="panel-body">
                                     {% if data.published %}
                                         <div class="well">
                                             <table cellpadding="0" cellspacing="0" border="0" class="display dataTable">
                                                 <thead>
-                                                    <tr style="font-size:9px">
-                                                        <th style="font-size:9px">Strike</th>
-                                                        <th style="font-size:9px">Call</th>
-                                                        <th style="font-size:9px">Put</th>
-                                                        <th style="font-size:9px">Stradle</th>
-                                                        <th style="font-size:9px">Call Delta</th>
-                                                        <th style="font-size:9px">Put Delta</th>
-                                                        <th style="font-size:9px">Gamma</th>
-                                                        <th style="font-size:9px">Theta</th>
-                                                        <th style="font-size:9px">Vega</th>
-                                                        <th style="font-size:9px">Imp. Vol.</th>
-                                                        <th style="font-size:9px">Change</th>
+                                                    <tr style="font-size:11px">
+                                                        <th style="font-size:11px">Strike</th>
+                                                        <th style="font-size:11px">Call</th>
+                                                        <th style="font-size:11px">Put</th>
+                                                        <th style="font-size:11px">Stradle</th>
+                                                        <th style="font-size:11px">Call Delta</th>
+                                                        <th style="font-size:11px">Put Delta</th>
+                                                        <th style="font-size:11px">Gamma</th>
+                                                        <th style="font-size:11px">Theta</th>
+                                                        <th style="font-size:11px">Vega</th>
+                                                        <th style="font-size:11px">Imp. Vol.</th>
+                                                        <th style="font-size:11px">Change</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                 {% for row in data.table_data %}
                                                 <tr class="gradeC">
                                                 {% for e in row %}
-                                                    <td style="font-size:9px">{{e}}</td>
+                                                    <td style="font-size:11px">{{e}}</td>
                                                 {% endfor %}
                                                 </tr>
                                                 {% endfor %}
                                                 </tbody>
                                                 <tfoot>
-                                                    <tr style="font-size:9px">
-                                                        <th style="font-size:9px">Strike</th>
-                                                        <th style="font-size:9px">Call</th>
-                                                        <th style="font-size:9px">Put</th>
-                                                        <th style="font-size:9px">Stradle</th>
-                                                        <th style="font-size:9px">Call Delta</th>
-                                                        <th style="font-size:9px">Put Delta</th>
-                                                        <th style="font-size:9px">Gamma</th>
-                                                        <th style="font-size:9px">Theta</th>
-                                                        <th style="font-size:9px">Vega</th>
-                                                        <th style="font-size:9px">Imp. Vol.</th>
-                                                        <th style="font-size:9px">Change</th>
+                                                    <tr style="font-size:11px">
+                                                        <th style="font-size:11px">Strike</th>
+                                                        <th style="font-size:11px">Call</th>
+                                                        <th style="font-size:11px">Put</th>
+                                                        <th style="font-size:11px">Stradle</th>
+                                                        <th style="font-size:11px">Call Delta</th>
+                                                        <th style="font-size:11px">Put Delta</th>
+                                                        <th style="font-size:11px">Gamma</th>
+                                                        <th style="font-size:11px">Theta</th>
+                                                        <th style="font-size:11px">Vega</th>
+                                                        <th style="font-size:11px">Imp. Vol.</th>
+                                                        <th style="font-size:11px">Change</th>
                                                     </tr>
                                                 </tfoot>
                                             </table>
@@ -96,9 +97,9 @@
                 {% endfor %}
             </div>
         {% endfor %}
-        {% else %}
+    {% else %}
         <div class="jumbotron">
-          <h1>No futures to Display.</h1>
+          <h1>No Prices Selected.</h1>
         </div>
     {% endif %}
 
@@ -149,6 +150,28 @@
     }
 </script>
 
+<script>
+    function refresh() {
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", "/prices.html");
+
+    var options = document.getElementsByName("option");
+
+    for (var i = 0; i < options.length; i++){
+        var hiddenField = document.createElement("input");
+        hiddenField.setAttribute("type", "hidden");
+        hiddenField.setAttribute("name", options[i].id);
+        hiddenField.setAttribute("value", true);
+        form.appendChild(hiddenField);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+
+    }
+    setTimeout(refresh, 120000);
+</script>
 
 
 

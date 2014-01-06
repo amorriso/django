@@ -179,9 +179,15 @@ def prices(request):
                     else:
                         futuredict[future][option_def]['published'] = False
     
+        if len(required_options) > 0:
+            containsdata = True
+        else:
+            containsdata = False
+
         template = loader.get_template('prices.html')
         context = RequestContext(request, {
-            'futuredict': futuredict
+            'futuredict': futuredict,
+            'containsdata' : containsdata
             })
         return HttpResponse(template.render(context))
 

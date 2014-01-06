@@ -77,6 +77,7 @@ def published(request):
         #option_definition_dict = dict([(o, o.name) for o in option_definitions])
     
         futuredict = collections.OrderedDict()
+        counter = 0
         for future in futures:
             futuredict[future] = collections.OrderedDict()
             for option_def in option_definitions:
@@ -90,6 +91,8 @@ def published(request):
     
                     if len(publishedcontracts) > 0:
                         futuredict[future][option_def]['published'] = True
+                        futuredict[future][option_def]['counter'] = counter
+                        counter += 1
                         #futuredict[future][option_definition_dict[option_def]]['published_time'] = publishedcontracts[0].publish_time
                         futuredict[future][option_def]['published_time'] = publishedcontracts[0].publish_time
         
