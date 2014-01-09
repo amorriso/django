@@ -141,7 +141,7 @@ def published(request):
                         all_strikes = sorted(list(all_strikes))
 
                         published_vols = hf.remap_values(published_vols, published_strikes, all_strikes)
-                        futuredict[future][option_def]['published_vols'] = published_vols
+                        futuredict[future][option_def]['published_vols'] = json.dumps(published_vols)
 
                         bids = hf.remap_values([o.bid if o.bid > 0 else None for o in optioncontracts], strikes, all_strikes)
                         asks = hf.remap_values([o.ask if o.ask > 0 else None for o in optioncontracts], strikes, all_strikes)

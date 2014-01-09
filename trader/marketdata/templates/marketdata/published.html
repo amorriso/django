@@ -60,7 +60,7 @@ $(document).ready(function () {
             enabled: false
         };
         config.title = {
-            text: title,
+            text: '',
             x: -20 //center
         };
         config.subtitle = {
@@ -190,7 +190,7 @@ $(document).ready(function () {
         <div class="panel-body">
             {% for option, data in optiondefs.items %}
             <div class="row">
-                <div class="col-sm-8 pull-left"> 
+                <div class="col-sm-7"> 
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             <h3 class="panel-title">Published Table: {{option.name}}</h3>
@@ -200,42 +200,42 @@ $(document).ready(function () {
                                 <div class="well">
                                     <table cellpadding="0" cellspacing="0" border="0" class="display dataTable">
                                         <thead>
-                                            <tr style="font-size:9px">
-                                                <th style="font-size:9px">Strike</th>
-                                                <th style="font-size:9px">Call</th>
-                                                <th style="font-size:9px">Put</th>
-                                                <th style="font-size:9px">Stradle</th>
-                                                <th style="font-size:9px">Call Delta</th>
-                                                <th style="font-size:9px">Put Delta</th>
-                                                <th style="font-size:9px">Gamma</th>
-                                                <th style="font-size:9px">Theta</th>
-                                                <th style="font-size:9px">Vega</th>
-                                                <th style="font-size:9px">Imp. Vol.</th>
-                                                <th style="font-size:9px">Change</th>
+                                            <tr style="font-size:8px">
+                                                <th style="font-size:8px">Strike</th>
+                                                <th style="font-size:8px">Call</th>
+                                                <th style="font-size:8px">Put</th>
+                                                <th style="font-size:8px">Stradle</th>
+                                                <th style="font-size:8px">Call Delta</th>
+                                                <th style="font-size:8px">Put Delta</th>
+                                                <th style="font-size:8px">Gamma</th>
+                                                <th style="font-size:8px">Theta</th>
+                                                <th style="font-size:8px">Vega</th>
+                                                <th style="font-size:8px">Imp. Vol.</th>
+                                                <th style="font-size:8px">Change</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                         {% for row in data.table_data %}
                                         <tr class="gradeC">
                                         {% for e in row %}
-                                            <td style="font-size:9px">{{e}}</td>
+                                            <td style="font-size:8px">{{e}}</td>
                                         {% endfor %}
                                         </tr>
                                         {% endfor %}
                                         </tbody>
                                         <tfoot>
-                                            <tr style="font-size:9px">
-                                                <th style="font-size:9px">Strike</th>
-                                                <th style="font-size:9px">Call</th>
-                                                <th style="font-size:9px">Put</th>
-                                                <th style="font-size:9px">Stradle</th>
-                                                <th style="font-size:9px">Call Delta</th>
-                                                <th style="font-size:9px">Put Delta</th>
-                                                <th style="font-size:9px">Gamma</th>
-                                                <th style="font-size:9px">Theta</th>
-                                                <th style="font-size:9px">Vega</th>
-                                                <th style="font-size:9px">Imp. Vol.</th>
-                                                <th style="font-size:9px">Change</th>
+                                            <tr style="font-size:8px">
+                                                <th style="font-size:8px">Strike</th>
+                                                <th style="font-size:8px">Call</th>
+                                                <th style="font-size:8px">Put</th>
+                                                <th style="font-size:8px">Stradle</th>
+                                                <th style="font-size:8px">Call Delta</th>
+                                                <th style="font-size:8px">Put Delta</th>
+                                                <th style="font-size:8px">Gamma</th>
+                                                <th style="font-size:8px">Theta</th>
+                                                <th style="font-size:8px">Vega</th>
+                                                <th style="font-size:8px">Imp. Vol.</th>
+                                                <th style="font-size:8px">Change</th>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -250,16 +250,14 @@ $(document).ready(function () {
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-8 pull-right"> 
+                <div class="col-sm-5"> 
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             <h3 class="panel-title">Live Comparison: {{option.name}}</h3>
                         </div>
                         <div class="panel-body">
                             {% if data.published %}
-                                <div id="{{option.name}}" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                                <div id="{{option.name}}" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
                             {% else %}
                                 <div class="well text-center">
                                     <h2>
