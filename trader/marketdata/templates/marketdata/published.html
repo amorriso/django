@@ -29,7 +29,7 @@ function getPubData(option_name_position) {
             charts[position].series[2].setData(data.values, true);
             charts[position].series[3].setData(data.last_trade_value, true);
 
-            setTimeout(getPubData, 2000, option_name_position);
+            setTimeout(getPubData, 60000, option_name_position);
             //setTimeout(getPubData, 10000000000, option_name_position);
 		},
 		cache: false
