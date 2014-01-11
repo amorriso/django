@@ -1,0 +1,466 @@
+-- MySQL dump 10.13  Distrib 5.6.15, for Win64 (x86_64)
+--
+-- Host: localhost    Database: marketdata
+-- ------------------------------------------------------
+-- Server version	5.6.15-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `auth_group`
+--
+
+DROP TABLE IF EXISTS `auth_group`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `auth_group` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(80) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `auth_group`
+--
+
+LOCK TABLES `auth_group` WRITE;
+/*!40000 ALTER TABLE `auth_group` DISABLE KEYS */;
+/*!40000 ALTER TABLE `auth_group` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `auth_group_permissions`
+--
+
+DROP TABLE IF EXISTS `auth_group_permissions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `auth_group_permissions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `group_id` int(11) NOT NULL,
+  `permission_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `group_id` (`group_id`,`permission_id`),
+  KEY `auth_group_permissions_5f412f9a` (`group_id`),
+  KEY `auth_group_permissions_83d7f98b` (`permission_id`),
+  CONSTRAINT `group_id_refs_id_f4b32aac` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`),
+  CONSTRAINT `permission_id_refs_id_6ba0f519` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `auth_group_permissions`
+--
+
+LOCK TABLES `auth_group_permissions` WRITE;
+/*!40000 ALTER TABLE `auth_group_permissions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `auth_group_permissions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `auth_permission`
+--
+
+DROP TABLE IF EXISTS `auth_permission`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `auth_permission` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `content_type_id` int(11) NOT NULL,
+  `codename` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `content_type_id` (`content_type_id`,`codename`),
+  KEY `auth_permission_37ef4eb4` (`content_type_id`),
+  CONSTRAINT `content_type_id_refs_id_d043b34a` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `auth_permission`
+--
+
+LOCK TABLES `auth_permission` WRITE;
+/*!40000 ALTER TABLE `auth_permission` DISABLE KEYS */;
+INSERT INTO `auth_permission` VALUES (1,'Can add permission',1,'add_permission'),(2,'Can change permission',1,'change_permission'),(3,'Can delete permission',1,'delete_permission'),(4,'Can add group',2,'add_group'),(5,'Can change group',2,'change_group'),(6,'Can delete group',2,'delete_group'),(7,'Can add user',3,'add_user'),(8,'Can change user',3,'change_user'),(9,'Can delete user',3,'delete_user'),(10,'Can add content type',4,'add_contenttype'),(11,'Can change content type',4,'change_contenttype'),(12,'Can delete content type',4,'delete_contenttype'),(13,'Can add session',5,'add_session'),(14,'Can change session',5,'change_session'),(15,'Can delete session',5,'delete_session'),(16,'Can add site',6,'add_site'),(17,'Can change site',6,'change_site'),(18,'Can delete site',6,'delete_site'),(19,'Can add log entry',7,'add_logentry'),(20,'Can change log entry',7,'change_logentry'),(21,'Can delete log entry',7,'delete_logentry'),(22,'Can add future',8,'add_future'),(23,'Can change future',8,'change_future'),(24,'Can delete future',8,'delete_future'),(25,'Can add option definition',9,'add_optiondefinition'),(26,'Can change option definition',9,'change_optiondefinition'),(27,'Can delete option definition',9,'delete_optiondefinition'),(28,'Can add option contract',10,'add_optioncontract'),(29,'Can change option contract',10,'change_optioncontract'),(30,'Can delete option contract',10,'delete_optioncontract'),(31,'Can add publish option contract',11,'add_publishoptioncontract'),(32,'Can change publish option contract',11,'change_publishoptioncontract'),(33,'Can delete publish option contract',11,'delete_publishoptioncontract');
+/*!40000 ALTER TABLE `auth_permission` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `auth_user`
+--
+
+DROP TABLE IF EXISTS `auth_user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `auth_user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `password` varchar(128) NOT NULL,
+  `last_login` datetime NOT NULL,
+  `is_superuser` tinyint(1) NOT NULL,
+  `username` varchar(30) NOT NULL,
+  `first_name` varchar(30) NOT NULL,
+  `last_name` varchar(30) NOT NULL,
+  `email` varchar(75) NOT NULL,
+  `is_staff` tinyint(1) NOT NULL,
+  `is_active` tinyint(1) NOT NULL,
+  `date_joined` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `auth_user`
+--
+
+LOCK TABLES `auth_user` WRITE;
+/*!40000 ALTER TABLE `auth_user` DISABLE KEYS */;
+INSERT INTO `auth_user` VALUES (1,'pbkdf2_sha256$12000$eBQg5aZJou0z$/kA0Edl2ZOcgtBOgNXrZZS5TuXPgO9c032linNKOikg=','2014-01-07 21:08:13',1,'amorriso','','','anthony.e.morrison@gmail.com',1,1,'2013-11-25 05:57:49'),(2,'pbkdf2_sha256$12000$VpvJ6yI6WiMg$HlQ2IGVFmhn3sqsTtkTxi6bkYcnTwbUUnxTqBVXc9t0=','2014-01-07 21:09:04',1,'gareth','Gareth','Willcock','',0,1,'2014-01-07 21:09:04');
+/*!40000 ALTER TABLE `auth_user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `auth_user_groups`
+--
+
+DROP TABLE IF EXISTS `auth_user_groups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `auth_user_groups` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`user_id`,`group_id`),
+  KEY `auth_user_groups_6340c63c` (`user_id`),
+  KEY `auth_user_groups_5f412f9a` (`group_id`),
+  CONSTRAINT `group_id_refs_id_274b862c` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`),
+  CONSTRAINT `user_id_refs_id_40c41112` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `auth_user_groups`
+--
+
+LOCK TABLES `auth_user_groups` WRITE;
+/*!40000 ALTER TABLE `auth_user_groups` DISABLE KEYS */;
+/*!40000 ALTER TABLE `auth_user_groups` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `auth_user_user_permissions`
+--
+
+DROP TABLE IF EXISTS `auth_user_user_permissions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `auth_user_user_permissions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `permission_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`user_id`,`permission_id`),
+  KEY `auth_user_user_permissions_6340c63c` (`user_id`),
+  KEY `auth_user_user_permissions_83d7f98b` (`permission_id`),
+  CONSTRAINT `permission_id_refs_id_35d9ac25` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`),
+  CONSTRAINT `user_id_refs_id_4dc23c39` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `auth_user_user_permissions`
+--
+
+LOCK TABLES `auth_user_user_permissions` WRITE;
+/*!40000 ALTER TABLE `auth_user_user_permissions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `auth_user_user_permissions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `django_admin_log`
+--
+
+DROP TABLE IF EXISTS `django_admin_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `django_admin_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `action_time` datetime NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `content_type_id` int(11) DEFAULT NULL,
+  `object_id` longtext,
+  `object_repr` varchar(200) NOT NULL,
+  `action_flag` smallint(5) unsigned NOT NULL,
+  `change_message` longtext NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `django_admin_log_6340c63c` (`user_id`),
+  KEY `django_admin_log_37ef4eb4` (`content_type_id`),
+  CONSTRAINT `content_type_id_refs_id_93d2d1f8` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`),
+  CONSTRAINT `user_id_refs_id_c0d12874` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `django_admin_log`
+--
+
+LOCK TABLES `django_admin_log` WRITE;
+/*!40000 ALTER TABLE `django_admin_log` DISABLE KEYS */;
+INSERT INTO `django_admin_log` VALUES (1,'2013-12-16 20:32:45',1,8,'4','BUNDMAR14',1,''),(2,'2013-12-16 20:35:54',1,9,'8','BUND_OPT_MAR14, based on: BUNDMAR14',1,''),(3,'2013-12-16 20:37:03',1,9,'8','BUND_OPT_FEB14, based on: BUNDMAR14',2,'Changed name, bloomberg_prefix and easyscreen_prefix.'),(4,'2013-12-17 08:05:22',1,8,'4','BUNDMAR14',3,''),(5,'2013-12-17 08:28:49',1,9,'2','BUND_OPT_FEB, based on: BUNDMAR14',3,''),(6,'2013-12-17 08:30:50',1,8,'2','BUNDDEC13',3,''),(7,'2013-12-17 12:01:11',1,9,'8','BUND_OPT_FEB14, based on: BUNDMAR14',2,'Changed month_tag.'),(8,'2013-12-17 12:41:00',1,9,'1','BUND_OPT_JAN, based on: BUNDMAR14',2,'Changed number_of_OTM_options.'),(9,'2013-12-17 12:52:38',1,9,'1','BUND_OPT_JAN, based on: BUNDMAR14',2,'Changed number_of_OTM_options.'),(10,'2013-12-17 15:01:29',1,9,'5','BOBL_OPT_JAN, based on: BOBLMAR14',2,'Changed number_of_OTM_options.'),(11,'2013-12-17 15:34:49',1,9,'5','BOBL_OPT_JAN, based on: BOBLMAR14',2,'Changed number_of_OTM_options.'),(12,'2013-12-17 15:38:05',1,9,'1','BUND_OPT_JAN, based on: BUNDMAR14',2,'Changed number_of_OTM_options.'),(13,'2013-12-17 15:38:40',1,9,'3','BUND_OPT_MAR, based on: BUNDMAR14',2,'Changed number_of_OTM_options.'),(14,'2013-12-17 15:39:14',1,9,'8','BUND_OPT_FEB14, based on: BUNDMAR14',2,'Changed number_of_OTM_options.'),(15,'2013-12-17 15:39:46',1,9,'5','BOBL_OPT_JAN, based on: BOBLMAR14',2,'Changed number_of_OTM_options.'),(16,'2013-12-17 15:40:32',1,9,'6','BOBL_OPT_FEB, based on: BOBLMAR14',2,'Changed number_of_OTM_options.'),(17,'2013-12-17 15:41:02',1,9,'7','BOBL_OPT_MAR, based on: BOBLMAR14',2,'Changed number_of_OTM_options.'),(18,'2013-12-17 16:00:38',1,9,'1','BUND_OPT_JAN, based on: BUNDMAR14',2,'Changed number_of_OTM_options.'),(19,'2013-12-17 16:01:16',1,9,'3','BUND_OPT_MAR, based on: BUNDMAR14',2,'Changed number_of_OTM_options.'),(20,'2013-12-17 16:01:26',1,9,'8','BUND_OPT_FEB14, based on: BUNDMAR14',2,'Changed number_of_OTM_options.'),(21,'2013-12-17 16:01:33',1,9,'7','BOBL_OPT_MAR, based on: BOBLMAR14',2,'Changed number_of_OTM_options.'),(22,'2013-12-17 16:01:41',1,9,'6','BOBL_OPT_FEB, based on: BOBLMAR14',2,'Changed number_of_OTM_options.'),(23,'2013-12-17 16:01:53',1,9,'5','BOBL_OPT_JAN, based on: BOBLMAR14',2,'Changed number_of_OTM_options.'),(24,'2013-12-17 16:10:05',1,9,'1','BUND_OPT_JAN, based on: BUNDMAR14',2,'Changed number_of_OTM_options.'),(25,'2013-12-17 16:24:07',1,9,'1','BUND_OPT_JAN, based on: BUNDMAR14',2,'Changed number_of_OTM_options.'),(26,'2013-12-22 14:35:08',1,9,'8','BUND_OPT_FEB14, based on: BUNDMAR14',3,''),(27,'2013-12-27 16:43:59',1,9,'5','BOBL_OPT_JAN, based on: BOBLMAR14',3,''),(28,'2013-12-27 16:44:24',1,9,'6','BOBL_OPT_FEB, based on: BOBLMAR14',3,''),(29,'2013-12-27 16:44:59',1,9,'1','BUND_OPT_JAN, based on: BUNDMAR14',3,''),(30,'2013-12-27 16:46:40',1,9,'7','BOBL_OPT_MAR, based on: BOBLMAR14',2,'Changed number_of_OTM_options.'),(31,'2013-12-27 16:46:48',1,9,'3','BUND_OPT_MAR, based on: BUNDMAR14',2,'Changed number_of_OTM_options.'),(32,'2013-12-27 16:52:08',1,9,'3','BUND_OPT_MAR, based on: BUNDMAR14',2,'Changed number_of_OTM_options.'),(33,'2013-12-30 12:38:53',1,9,'7','BOBL_OPT_MAR, based on: BOBLMAR14',2,'Changed number_of_OTM_options.'),(34,'2013-12-30 12:39:21',1,9,'7','BOBL_OPT_MAR, based on: BOBLMAR14',2,'No fields changed.'),(35,'2013-12-30 13:49:15',1,9,'7','BOBL_OPT_MAR, based on: BOBLMAR14',2,'Changed number_of_OTM_options.'),(36,'2013-12-30 13:49:21',1,9,'3','BUND_OPT_MAR, based on: BUNDMAR14',2,'Changed number_of_OTM_options.'),(37,'2013-12-30 13:54:49',1,9,'7','BOBL_OPT_MAR, based on: BOBLMAR14',2,'Changed number_of_OTM_options.'),(38,'2013-12-30 13:55:03',1,9,'3','BUND_OPT_MAR, based on: BUNDMAR14',2,'Changed number_of_OTM_options.'),(39,'2014-01-07 21:09:05',1,3,'2','gareth.willcock',1,''),(40,'2014-01-09 17:23:06',1,9,'7','BOBL_OPT_MAR, based on: BOBLMAR14',2,'Changed number_of_OTM_options.'),(41,'2014-01-11 05:52:54',1,3,'2','gareth',2,'Changed username, first_name, last_name and is_superuser.'),(42,'2014-01-11 05:54:01',1,3,'1','amorriso',2,'Changed password.');
+/*!40000 ALTER TABLE `django_admin_log` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `django_content_type`
+--
+
+DROP TABLE IF EXISTS `django_content_type`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `django_content_type` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `app_label` varchar(100) NOT NULL,
+  `model` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `app_label` (`app_label`,`model`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `django_content_type`
+--
+
+LOCK TABLES `django_content_type` WRITE;
+/*!40000 ALTER TABLE `django_content_type` DISABLE KEYS */;
+INSERT INTO `django_content_type` VALUES (1,'permission','auth','permission'),(2,'group','auth','group'),(3,'user','auth','user'),(4,'content type','contenttypes','contenttype'),(5,'session','sessions','session'),(6,'site','sites','site'),(7,'log entry','admin','logentry'),(8,'future','marketdata','future'),(9,'option definition','marketdata','optiondefinition'),(10,'option contract','marketdata','optioncontract'),(11,'publish option contract','marketdata','publishoptioncontract');
+/*!40000 ALTER TABLE `django_content_type` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `django_session`
+--
+
+DROP TABLE IF EXISTS `django_session`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `django_session` (
+  `session_key` varchar(40) NOT NULL,
+  `session_data` longtext NOT NULL,
+  `expire_date` datetime NOT NULL,
+  PRIMARY KEY (`session_key`),
+  KEY `django_session_b7b81f0c` (`expire_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `django_session`
+--
+
+LOCK TABLES `django_session` WRITE;
+/*!40000 ALTER TABLE `django_session` DISABLE KEYS */;
+INSERT INTO `django_session` VALUES ('dm4iun8kmbngzk9pkd9qrsg2gh7czb8l','ZjM1MDQ1NTMwODllODAwMTRkNmQ3MTk5ZTAwY2RlZDI3MjcyZGY1NDp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=','2014-01-18 07:46:39'),('dx87zx21mjk00mikmdogsnbjjtbu6xj2','ZjM1MDQ1NTMwODllODAwMTRkNmQ3MTk5ZTAwY2RlZDI3MjcyZGY1NDp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=','2014-01-20 17:55:18'),('rz9mqr9wpa4udx6euevh1gs3ctgf84ty','ZjM1MDQ1NTMwODllODAwMTRkNmQ3MTk5ZTAwY2RlZDI3MjcyZGY1NDp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=','2013-12-19 09:27:26'),('ux5jj61dgd8tuiyvj3l0nqjdih7r6fcd','ZjM1MDQ1NTMwODllODAwMTRkNmQ3MTk5ZTAwY2RlZDI3MjcyZGY1NDp7Il9hdXRoX3VzZXJfYmFja2VuZCI6ImRqYW5nby5jb250cmliLmF1dGguYmFja2VuZHMuTW9kZWxCYWNrZW5kIiwiX2F1dGhfdXNlcl9pZCI6MX0=','2014-01-21 21:08:13');
+/*!40000 ALTER TABLE `django_session` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `django_site`
+--
+
+DROP TABLE IF EXISTS `django_site`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `django_site` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `domain` varchar(100) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `django_site`
+--
+
+LOCK TABLES `django_site` WRITE;
+/*!40000 ALTER TABLE `django_site` DISABLE KEYS */;
+INSERT INTO `django_site` VALUES (1,'example.com','example.com');
+/*!40000 ALTER TABLE `django_site` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `marketdata_future`
+--
+
+DROP TABLE IF EXISTS `marketdata_future`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `marketdata_future` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(200) NOT NULL,
+  `bloomberg_id` varchar(200) NOT NULL,
+  `easyscreen_id` varchar(200) NOT NULL,
+  `bid` double NOT NULL,
+  `bid_volume` double NOT NULL,
+  `ask` double NOT NULL,
+  `ask_volume` double NOT NULL,
+  `value` double NOT NULL,
+  `last_trade_value` double NOT NULL,
+  `last_updated` datetime NOT NULL,
+  `last_trade_volume` double NOT NULL,
+  `month_tag` varchar(200) NOT NULL,
+  `expiry_date` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `marketdata_future`
+--
+
+LOCK TABLES `marketdata_future` WRITE;
+/*!40000 ALTER TABLE `marketdata_future` DISABLE KEYS */;
+INSERT INTO `marketdata_future` VALUES (1,'BUNDMAR14','BLOOMBERG_BUNDMAR14','EBF:FGBL Mar 14',139.56,19,139.57,28,139.565,139.56,'2014-01-09 19:37:35',1,'MAR14','2014-03-21 00:00:00'),(3,'BOBLMAR14','BLOOMBERG_BOBLMAR14','EBF:FGBM Mar 14',124.64,59,124.65,41,124.645,124.65,'2014-01-09 19:37:30',62,'MAR14','2014-06-21 00:00:00');
+/*!40000 ALTER TABLE `marketdata_future` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `marketdata_optioncontract`
+--
+
+DROP TABLE IF EXISTS `marketdata_optioncontract`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `marketdata_optioncontract` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `optiondefinition_id` int(11) NOT NULL,
+  `easy_screen_mnemonic` varchar(200) NOT NULL,
+  `bloomberg_name` varchar(200) NOT NULL,
+  `strike` double NOT NULL,
+  `bid` double NOT NULL,
+  `bid_volume` double NOT NULL,
+  `ask` double NOT NULL,
+  `ask_volume` double NOT NULL,
+  `value` double NOT NULL,
+  `last_trade_value` double NOT NULL,
+  `last_trade_volume` double NOT NULL,
+  `vol` double NOT NULL,
+  `delta` double NOT NULL,
+  `expiry_date` datetime NOT NULL,
+  `time_to_expiry` double NOT NULL,
+  `last_updated` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `marketdata_optioncontract_c824f38e` (`optiondefinition_id`),
+  CONSTRAINT `optiondefinition_id_refs_id_568e6c1f` FOREIGN KEY (`optiondefinition_id`) REFERENCES `marketdata_optiondefinition` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `marketdata_optioncontract`
+--
+
+LOCK TABLES `marketdata_optioncontract` WRITE;
+/*!40000 ALTER TABLE `marketdata_optioncontract` DISABLE KEYS */;
+INSERT INTO `marketdata_optioncontract` VALUES (2,3,'EBO:OGBL Mar 14 13750p 0','BLOOM_BUND_OPT_MAR 13750p 0',137.5,0.26,1,0.29,1,0.275,0.27,1,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:28'),(3,3,'EBO:OGBL Mar 14 13800p 0','BLOOM_BUND_OPT_MAR 13800p 0',138,0.36,1,0.39,1,0.375,0.33,12,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:28'),(4,3,'EBO:OGBL Mar 14 13850p 0','BLOOM_BUND_OPT_MAR 13850p 0',138.5,0.49,1,0.53,1,0.51,0.53,2,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:28'),(5,3,'EBO:OGBL Mar 14 13900p 0','BLOOM_BUND_OPT_MAR 13900p 0',139,0.65,1,0.7,1,0.675,0.7,1,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:28'),(7,3,'EBO:OGBL Mar 14 14000c 0','BLOOM_BUND_OPT_MAR 14000c 0',140,0.63,1,0.68,1,0.655,0.72,100,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:28'),(8,3,'EBO:OGBL Mar 14 14050c 0','BLOOM_BUND_OPT_MAR 14050c 0',140.5,0.44,1,0.48,1,0.46,0.52,16,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:28'),(9,3,'EBO:OGBL Mar 14 14100c 0','BLOOM_BUND_OPT_MAR 14100c 0',141,0.29,1,0.32,1,0.305,0.32,1,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:28'),(10,3,'EBO:OGBL Mar 14 14150c 0','BLOOM_BUND_OPT_MAR 14150c 0',141.5,0.19,1,0.22,1,0.205,0.19,5,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:28'),(16,7,'EBO:OGBM Mar 14 12250p 0','BLOOM_BOBL_OPT_MAR 12250p 0',122.5,0.025,1,0.04,1,0.0325,0,0,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:28'),(17,7,'EBO:OGBM Mar 14 12300p 0','BLOOM_BOBL_OPT_MAR 12300p 0',123,0.055,1,0.075,1,0.065,0,0,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:28'),(18,7,'EBO:OGBM Mar 14 12350p 0','BLOOM_BOBL_OPT_MAR 12350p 0',123.5,0.11,1,0.135,1,0.1225,0,0,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:28'),(19,7,'EBO:OGBM Mar 14 12400p 0','BLOOM_BOBL_OPT_MAR 12400p 0',124,0.205,1,0.235,1,0.22,0,0,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:28'),(20,7,'EBO:OGBM Mar 14 12450p 0','BLOOM_BOBL_OPT_MAR 12450p 0',124.5,0.365,1,0.4,1,0.3825,0.34,5,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:28'),(21,7,'EBO:OGBM Mar 14 12500c 0','BLOOM_BOBL_OPT_MAR 12500c 0',125,0.26,1,0.29,1,0.275,0,0,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:29'),(22,7,'EBO:OGBM Mar 14 12550c 0','BLOOM_BOBL_OPT_MAR 12550c 0',125.5,0.105,1,0.13,1,0.1175,0,0,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:29'),(23,7,'EBO:OGBM Mar 14 12600c 0','BLOOM_BOBL_OPT_MAR 12600c 0',126,0.035,1,0.055,1,0.045,0.055,5,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:29'),(24,7,'EBO:OGBM Mar 14 12650c 0','BLOOM_BOBL_OPT_MAR 12650c 0',126.5,0.015,1,0.025,1,0.02,0.015,5,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:29'),(25,7,'EBO:OGBM Mar 14 12700c 0','BLOOM_BOBL_OPT_MAR 12700c 0',127,-99,-99,-99,-99,-99,-99,-99,-99,-99,'2014-03-21 00:00:00',-99,'1900-01-01 00:00:00'),(26,3,'EBO:OGBL Mar 14 13950p 0','BLOOM_BUND_OPT_MAR 13950p 0',139.5,0.86,1,0.91,1,0.885,0.91,1,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:28'),(27,3,'EBO:OGBL Mar 14 14200c 0','BLOOM_BUND_OPT_MAR 14200c 0',142,0.11,1,0.13,1,0.12,0.12,5,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:28'),(28,7,'EBO:OGBM Mar 14 12000p 0','BLOOM_BOBL_OPT_MAR 12000p 0',120,-99,-99,-99,-99,-99,-99,-99,-99,-99,'2014-03-21 00:00:00',-99,'1900-01-01 00:00:00'),(29,7,'EBO:OGBM Mar 14 12050p 0','BLOOM_BOBL_OPT_MAR 12050p 0',120.5,-99,-99,-99,-99,-99,-99,-99,-99,-99,'2014-03-21 00:00:00',-99,'1900-01-01 00:00:00'),(30,7,'EBO:OGBM Mar 14 12100p 0','BLOOM_BOBL_OPT_MAR 12100p 0',121,-99,-99,-99,-99,-99,-99,-99,-99,-99,'2014-03-21 00:00:00',-99,'1900-01-01 00:00:00'),(31,7,'EBO:OGBM Mar 14 12150p 0','BLOOM_BOBL_OPT_MAR 12150p 0',121.5,-99,-99,-99,-99,-99,-99,-99,-99,-99,'2014-03-21 00:00:00',-99,'1900-01-01 00:00:00'),(32,7,'EBO:OGBM Mar 14 12200p 0','BLOOM_BOBL_OPT_MAR 12200p 0',122,0.01,1,0.025,1,0.0175,0,0,-99,-99,'2014-03-21 00:00:00',-99,'2014-01-09 19:37:28'),(33,7,'EBO:OGBM Mar 14 12750c 0','BLOOM_BOBL_OPT_MAR 12750c 0',127.5,-99,-99,-99,-99,-99,-99,-99,-99,-99,'2014-03-21 00:00:00',-99,'1900-01-01 00:00:00'),(34,7,'EBO:OGBM Mar 14 12800c 0','BLOOM_BOBL_OPT_MAR 12800c 0',128,-99,-99,-99,-99,-99,-99,-99,-99,-99,'2014-03-21 00:00:00',-99,'1900-01-01 00:00:00'),(35,7,'EBO:OGBM Mar 14 12850c 0','BLOOM_BOBL_OPT_MAR 12850c 0',128.5,-99,-99,-99,-99,-99,-99,-99,-99,-99,'2014-03-21 00:00:00',-99,'1900-01-01 00:00:00'),(36,7,'EBO:OGBM Mar 14 12900c 0','BLOOM_BOBL_OPT_MAR 12900c 0',129,-99,-99,-99,-99,-99,-99,-99,-99,-99,'2014-03-21 00:00:00',-99,'1900-01-01 00:00:00'),(37,7,'EBO:OGBM Mar 14 12950c 0','BLOOM_BOBL_OPT_MAR 12950c 0',129.5,-99,-99,-99,-99,-99,-99,-99,-99,-99,'2014-03-21 00:00:00',-99,'1900-01-01 00:00:00');
+/*!40000 ALTER TABLE `marketdata_optioncontract` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `marketdata_optiondefinition`
+--
+
+DROP TABLE IF EXISTS `marketdata_optiondefinition`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `marketdata_optiondefinition` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(200) NOT NULL,
+  `future_id` int(11) NOT NULL,
+  `bloomberg_prefix` varchar(200) NOT NULL,
+  `easyscreen_prefix` varchar(200) NOT NULL,
+  `month_tag` varchar(200) NOT NULL,
+  `expiry_date` datetime NOT NULL,
+  `strike_interval` double NOT NULL,
+  `price_movement` double NOT NULL,
+  `number_of_OTM_options` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `marketdata_optiondefinition_661bf18b` (`future_id`),
+  CONSTRAINT `future_id_refs_id_86b56a37` FOREIGN KEY (`future_id`) REFERENCES `marketdata_future` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `marketdata_optiondefinition`
+--
+
+LOCK TABLES `marketdata_optiondefinition` WRITE;
+/*!40000 ALTER TABLE `marketdata_optiondefinition` DISABLE KEYS */;
+INSERT INTO `marketdata_optiondefinition` VALUES (3,'BUND_OPT_MAR',1,'BLOOM_BUND_OPT_MAR','EBO:OGBL Mar 14','MAR14','2014-03-21 00:00:00',0.5,0.01,10),(7,'BOBL_OPT_MAR',3,'BLOOM_BOBL_OPT_MAR','EBO:OGBM Mar 14','MAR14','2014-03-21 00:00:00',0.5,0.01,20);
+/*!40000 ALTER TABLE `marketdata_optiondefinition` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `marketdata_publishoptioncontract`
+--
+
+DROP TABLE IF EXISTS `marketdata_publishoptioncontract`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `marketdata_publishoptioncontract` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `optiondefinition_id` int(11) NOT NULL,
+  `future_id` int(11) NOT NULL,
+  `future_value` double NOT NULL,
+  `call_delta` double NOT NULL,
+  `put_delta` double NOT NULL,
+  `gamma` double NOT NULL,
+  `theta` double NOT NULL,
+  `vega` double NOT NULL,
+  `strike` double NOT NULL,
+  `call_value` double NOT NULL,
+  `put_value` double NOT NULL,
+  `vol` double NOT NULL,
+  `previous_vol` double NOT NULL,
+  `change` double NOT NULL,
+  `publish_time` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `marketdata_publishoptioncontract_c824f38e` (`optiondefinition_id`),
+  KEY `marketdata_publishoptioncontract_661bf18b` (`future_id`),
+  CONSTRAINT `future_id_refs_id_e9233344` FOREIGN KEY (`future_id`) REFERENCES `marketdata_future` (`id`),
+  CONSTRAINT `optiondefinition_id_refs_id_afac2cb8` FOREIGN KEY (`optiondefinition_id`) REFERENCES `marketdata_optiondefinition` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=656 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `marketdata_publishoptioncontract`
+--
+
+LOCK TABLES `marketdata_publishoptioncontract` WRITE;
+/*!40000 ALTER TABLE `marketdata_publishoptioncontract` DISABLE KEYS */;
+INSERT INTO `marketdata_publishoptioncontract` VALUES (606,3,1,138.98,0.749585434278457,-0.250414565721543,0.105637035813375,-5.72056325392467,19.6325001991499,137,2.43499325033376,0.454993250333764,0.0487770080566398,0.0450555944278879,0.00372141362875189,'2014-01-08 20:57:17'),(607,3,1,138.98,0.696124824756656,-0.303875175243344,0.11813265027744,-5.22332632070059,21.5859782658225,137.5,2.05999379286432,0.579993792864308,0.0479576110839835,0.0473083496093741,0.000649261474609426,'2014-01-08 20:57:17'),(608,3,1,138.98,0.635933971011631,-0.364066028988369,0.12873270389982,-4.70245743994433,23.1816044223916,138,1.71499265485134,0.734992654851375,0.0472618103027335,0.0466194152832023,0.000642395019531228,'2014-01-08 20:57:17'),(609,3,1,138.98,0.570810537644084,-0.429189462355916,0.137309979861167,-4.13729334157605,24.2364041959684,138.5,1.39485660234821,0.914856602348216,0.0463256835937492,0.0457008361816398,0.000624847412109358,'2014-01-08 20:57:17'),(610,3,1,138.98,0.501217690295418,-0.498782309704582,0.141479353302412,-3.58238072877,24.6252226619168,139,1.1150187565035,1.13501875650351,0.0456817626953116,0.0450592041015616,0.000622558593750051,'2014-01-08 20:57:17'),(611,3,1,138.98,0.429841524564438,-0.570158475435562,0.141335431626997,-3.02769296936622,24.2435528334587,139.5,0.869992776120156,1.38999277612018,0.0450195312499991,0.0444076538085929,0.000611877441406242,'2014-01-08 20:57:17'),(612,3,1,138.98,0.359491201905304,-0.640508798094696,0.136032965521427,-2.50478543212852,23.0817205897803,140,0.665013048805186,1.68501304880519,0.0445327758789054,0.0439270019531242,0.000605773925781199,'2014-01-08 20:57:17'),(613,3,1,138.98,0.291418077531674,-0.708581922468326,0.126857733123592,-1.99771140934497,21.1775130784231,140.5,0.490012157386637,2.01001215738664,0.0438140869140616,0.0432159423828117,0.000598144531249942,'2014-01-08 20:57:17'),(614,3,1,138.98,0.231425150929977,-0.768574849070023,0.113017755156051,-1.58147905283714,18.8079436969365,141,0.359972600825596,2.37997260082561,0.0436767578124992,0.0430831909179679,0.000593566894531258,'2014-01-08 20:57:17'),(615,3,1,138.98,0.177841082160319,-0.822158917839681,0.0973132230670195,-1.20630315431226,16.0745187247972,141.5,0.255044228849954,2.77504422884996,0.0433532714843742,0.0427612304687491,0.000592041015625051,'2014-01-08 20:57:17'),(636,7,3,124.62,0.974631771130643,-0.0253682288693565,0.024431106716571,-6.06696425360261,3.25192096089337,120,4.64341392303552,0.0234139230355037,0.0440611534944211,-99,0,'2014-01-09 17:25:33'),(637,7,3,124.62,0.981093063155781,-0.0189069368442191,0.0227930074936738,-5.10723344484028,2.53713225473386,120.5,4.13403680752947,0.0140368075294672,0.0368468609268976,-99,0,'2014-01-09 17:25:33'),(638,7,3,124.62,0.982825212777588,-0.0171747872224118,0.0244156134965276,-4.40055566835052,2.33757116066423,121,3.63083059998677,0.0108305999867544,0.031692479722321,-99,0,'2014-01-09 17:25:33'),(639,7,3,124.62,0.979569226792106,-0.0204307732078941,0.0318099285453727,-3.90240268512367,2.70972745127153,121.5,3.13170595328377,0.0117059532837804,0.0281982358973765,-99,0,'2014-01-09 17:25:33'),(640,7,3,124.62,0.968643269056603,-0.0313567309433965,0.0494578914501876,-3.55317354858161,3.87930674384662,122,2.63750760060294,0.0175076006029355,0.0259643554687491,-99,0,'2014-01-09 17:25:33'),(641,7,3,124.62,0.943792401590302,-0.0562075984096983,0.0837269460671213,-3.27890484719914,6.21990221171163,122.5,2.1524906685502,0.0324906685502047,0.0245910644531241,0.0245910644531241,4.16333634234434e-17,'2014-01-09 17:25:33'),(642,7,3,124.62,0.895831605907331,-0.104168394092669,0.138915690240906,-2.99679618242099,9.9368354052796,123,1.68500690124121,0.0650069012412064,0.0236785888671866,0.0236785888671866,3.46944695195361e-17,'2014-01-09 17:25:33'),(643,7,3,124.62,0.817262007695816,-0.182737992304184,0.211893304298176,-2.62613776818219,14.5592632214853,123.5,1.24499272898598,0.12499272898598,0.0227447509765616,0.0227447509765616,3.12250225675825e-17,'2014-01-09 17:25:33'),(644,7,3,124.62,0.702838418566864,-0.297161581433136,0.294008606328206,-2.12724582112663,19.0277833845937,124,0.842386645167949,0.22238664516793,0.0214233398437491,0.0214233398437491,3.12250225675825e-17,'2014-01-09 17:25:33'),(645,7,3,124.62,0.544163601626986,-0.455836398373014,0.351395376912294,-1.57825070096328,21.7925732426847,124.5,0.512470799157995,0.392470799157991,0.0205291748046866,0.020415496826171,0.000113677978515622,'2014-01-09 17:25:33'),(646,7,3,124.62,0.364176821403363,-0.635823178596637,0.348095697306504,-1.01002947718938,20.6436445092279,125,0.267492314815293,0.647492314815281,0.0196311950683585,0.0196311950683585,3.46944695195361e-18,'2014-01-09 17:25:33'),(647,7,3,124.62,0.201791591726443,-0.798208408273557,0.269434843709465,-0.541847088484851,15.4701101389223,125.5,0.117492343775158,0.99749234377515,0.0190063476562491,0.0190063476562491,2.42861286636753e-17,'2014-01-09 17:25:33'),(648,7,3,124.62,0.090070970379628,-0.909929029620372,0.159170587978194,-0.236342521060143,8.93070639402287,126,0.0424896945194764,1.42248969451947,0.0185729980468741,0.0185729980468741,3.81639164714898e-17,'2014-01-09 17:25:33'),(649,7,3,124.62,0.0398088625742882,-0.960191137425712,0.0808342636674822,-0.108660862825565,4.71796631488599,126.5,0.0169992127435972,1.89699921274359,0.0193205004295524,0.0199218749999991,-0.000601374570446702,'2014-01-09 17:25:33'),(650,7,3,124.62,0.0194499184502153,-0.980550081549785,0.0415140168595248,-0.0569446990856658,2.59893994360996,127,0.00808106022128685,2.38808106022128,0.020723376079236,0.0215139861019891,-0.00079061002275313,'2014-01-09 17:25:33'),(651,7,3,124.62,0.00966838628588767,-0.990331613714112,0.0213033826989109,-0.0301891504604441,1.42236624227016,127.5,0.00395360571852277,2.88395360571852,0.0221015070956192,-99,0,'2014-01-09 17:25:33'),(652,7,3,124.62,0.00605317480177698,-0.993946825198223,0.0129196897429798,-0.0206373766658783,0.941866453308828,128,0.0025766243172004,3.3825766243172,0.0241321638945476,-99,0,'2014-01-09 17:25:33'),(653,7,3,124.62,0.00541586199271853,-0.994584138007282,0.0103779672479214,-0.020825434239096,0.853305886185279,128.5,0.00257146872507019,3.88257146872506,0.0272177028025197,-99,0,'2014-01-09 17:25:33'),(654,7,3,124.62,0.00553421210086241,-0.994465787899138,0.00936499376613387,-0.0240397421786885,0.86985620861946,129,0.00297310537182072,4.38297310537182,0.0307467344415664,-99,0,'2014-01-09 17:25:33'),(655,7,3,124.62,0.0065365057832862,-0.993463494216714,0.00953925061826063,-0.0323066618360302,1.00815350391042,129.5,0.00405810386298167,4.88405810386297,0.034984158093513,-99,0,'2014-01-09 17:25:33');
+/*!40000 ALTER TABLE `marketdata_publishoptioncontract` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2014-01-11  9:55:47
