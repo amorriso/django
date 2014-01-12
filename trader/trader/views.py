@@ -192,7 +192,7 @@ def prices(request):
         return HttpResponse(template.render(context))
 
     except Exception as e:
-        print e
+        #print e
         raise Http404
 
 

@@ -175,7 +175,7 @@ def published(request):
         return HttpResponse(template.render(context))
 
     except Exception as e:
-        print e
+        #print e
         raise Http404
 
 
@@ -185,11 +185,11 @@ def published(request):
 def refresh_table(request, option_name):
     
     try:
-        print " ------------------------------------------------------------------------------ "
-        print request.POST
-        print " ------------------------------------------------------------------------------ "
-        print request.is_ajax()
-        print " ------------------------------------------------------------------------------ "
+        #print " ------------------------------------------------------------------------------ "
+        #print request.POST
+        #print " ------------------------------------------------------------------------------ "
+        #print request.is_ajax()
+        #print " ------------------------------------------------------------------------------ "
         
         if request.is_ajax() and request.POST:
             option_name = request.POST['option_name']
@@ -240,7 +240,7 @@ def refresh_table(request, option_name):
                     else:
                         changes.append(0.0)
 
-            print changes
+            #print changes
 
             heading_row = [future.name, option.name, future.bid]
 
@@ -267,11 +267,11 @@ def refresh_table(request, option_name):
                                             'heading_row' : heading_row,
                                             }), mimetype="application/json" )
         else:
-            print "else raise"
+            #print "else raise"
             raise Http404
 
     except Exception as e:
-        print e
+        #print e
         raise Http404
 
 
@@ -280,11 +280,11 @@ def refresh_table(request, option_name):
 def publish_table(request, option_name):
     
     try:
-        print " ------------------------------------------------------------------------------ "
-        print request.POST
-        print " ------------------------------------------------------------------------------ "
-        print request.is_ajax()
-        print " ------------------------------------------------------------------------------ "
+        #print " ------------------------------------------------------------------------------ "
+        #print request.POST
+        #print " ------------------------------------------------------------------------------ "
+        #print request.is_ajax()
+        #print " ------------------------------------------------------------------------------ "
         
         if request.is_ajax() and request.POST:
             option_name = request.POST['option_name']
@@ -363,11 +363,11 @@ def publish_table(request, option_name):
 def refresh_option(request, option_name):
     
     try:
-        print " ------------------------------------------------------------------------------ "
-        print request.POST
-        print " ------------------------------------------------------------------------------ "
-        print request.is_ajax()
-        print " ------------------------------------------------------------------------------ "
+        #print " ------------------------------------------------------------------------------ "
+        #print request.POST
+        #print " ------------------------------------------------------------------------------ "
+        #print request.is_ajax()
+        #print " ------------------------------------------------------------------------------ "
         
         if request.is_ajax() and request.POST:
             option_name = request.POST['option_name']
@@ -435,11 +435,11 @@ def refresh_option(request, option_name):
                                             'last_updated' : last_updated,
                                             }), mimetype="application/json" )
         else:
-            print "else raise"
+            #print "else raise"
             raise Http404
 
     except Exception as e:
-        print e
+        #print e
         raise Http404
    
     
@@ -583,7 +583,7 @@ def option(request, option_name):
                     )
 
     except Exception as e:
-        print e
+        #print e
         raise Http404
 
     return render(
