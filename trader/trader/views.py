@@ -52,6 +52,10 @@ def home(request):
                 else:
                     futuredict[future].append((o,False))
 
+        # if no options are published (associated with this future) we don't show this future.
+        if len(futuredict[future]) == 0:
+            del(futuredict[future])
+
     template = loader.get_template('index.html')
     context = RequestContext(request, {
         'futuredict': futuredict,
