@@ -584,7 +584,12 @@ def option(request, option_name):
 
     except Exception as e:
         #print e
-        raise Http404
+        #raise Http404
+        return render(
+                    request, 'marketdata/no-data-option.html',
+                    {
+                        'option': option, 
+                    })
 
     return render(
                     request, 'marketdata/option.html', 
