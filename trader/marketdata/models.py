@@ -5,7 +5,7 @@ import datetime
 
 class Future(models.Model):
     name = models.CharField(max_length=200)
-    bloomberg_id = models.CharField(max_length=200)
+    bloomberg_id = models.CharField(max_length=200, default = 'BLOOM')
     easyscreen_id = models.CharField(max_length=200)
     bid = models.FloatField(default = -99) 
     bid_volume = models.FloatField(default = -99) 
@@ -26,7 +26,7 @@ class Future(models.Model):
 class OptionDefinition(models.Model):
     name = models.CharField(max_length=200)
     future = models.ForeignKey(Future)
-    bloomberg_prefix = models.CharField(max_length=200)
+    bloomberg_prefix = models.CharField(max_length=200, default = 'BLOOM')
     easyscreen_prefix = models.CharField(max_length=200)
     month_tag = models.CharField(max_length=200)
     expiry_date = models.DateTimeField()
@@ -41,7 +41,7 @@ class OptionDefinition(models.Model):
 class OptionContract(models.Model):
     optiondefinition = models.ForeignKey(OptionDefinition)
     easy_screen_mnemonic = models.CharField(max_length=200)
-    bloomberg_name = models.CharField(max_length=200)
+    bloomberg_name = models.CharField(max_length=200, default = 'BLOOM')
     strike = models.FloatField(default = -99) 
     bid = models.FloatField(default = -99) 
     bid_volume = models.FloatField(default = -99) 
