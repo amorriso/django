@@ -20,6 +20,7 @@
       <ul class="nav navbar-nav">
         <li><a onclick="return postShowing();">Selection</a></li>
         <li class="active"><a>Prices</a></li>
+        <li><a onclick="return postSkewShowing();">Skews</a></li>
         <!--<li><a href="/admin/">Admin</a></li>-->
       </ul>
     </div><!--/.nav-collapse -->
@@ -149,6 +150,29 @@
         form.submit();
     }
 </script>
+
+
+<script type="text/javascript">
+    function postSkewShowing() {
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/skews.html");
+    
+        var options = document.getElementsByName("option");
+    
+        for (var i = 0; i < options.length; i++){
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", options[i].id);
+            hiddenField.setAttribute("value", true);
+            form.appendChild(hiddenField);
+        }
+    
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
 
 <script>
     function refresh() {

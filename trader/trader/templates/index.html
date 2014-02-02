@@ -22,6 +22,7 @@
       <ul class="nav navbar-nav">
         <li class="active"><a>Selection</a></li>
         <li><a onclick="return postSelection();">Prices</a></li>
+        <li><a onclick="return postSkewSelection();">Skews</a></li>
         <!--<li><a href="/admin/">Admin</a></li>-->
       </ul>
     </div>
@@ -94,6 +95,31 @@
         var form = document.createElement("form");
         form.setAttribute("method", "post");
         form.setAttribute("action", "/prices.html");
+    
+        var options = document.getElementsByName("option");
+    
+        for (var i = 0; i < options.length; i++){
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", options[i].id);
+            if (options[i].checked){
+                hiddenField.setAttribute("value", true);
+            } else {
+                hiddenField.setAttribute("value", false);
+            }
+            form.appendChild(hiddenField);
+        }
+    
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+<script type="text/javascript">
+    function postSkewSelection() {
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/skews.html");
     
         var options = document.getElementsByName("option");
     

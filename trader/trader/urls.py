@@ -9,7 +9,9 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'trader.views.home', name='home'),
     url(r'^prices\.html$', 'trader.views.prices', name='prices'),
+    url(r'^skews\.html$', 'trader.views.skews', name='skews'),
     url(r'^index\.html$', 'trader.views.home', name='home'),
+    url(r'^refresh/(?P<option_name>\w+)/$', 'trader.views.refresh_option', name='refresh_option'),
     # url(r'^trader/', include('trader.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

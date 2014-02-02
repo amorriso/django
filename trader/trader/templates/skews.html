@@ -1,0 +1,238 @@
+{% extends "highchartsbase.html" %}
+{% block title %}
+<title>Published Prices</title>
+{% endblock %}
+{% block content %}  
+
+function getPubData(option_name_position) {
+
+    // NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE 
+
+    // NOTE NOTE Published prices does not automagically update. Just the market prices. Why?
+    // Because I haven't implemented it. See below, we don't update charts[position].series[4]
+    // (which would be the published prices)
+
+    // NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE 
+    
+    var split_start = option_name_position.indexOf("|||");
+    var option_name = option_name_position.slice(0,split_start);
+    var position = option_name_position.slice(split_start + 3, option_name_position.length);
+
+    $.ajax({
+        url: "/refresh/" + option_name + "/",
+        data: {option_name: option_name},
+        type: 'POST',
+        dataType: "json",
+        success: function(data) {
+            charts[position].series[0].setData(data.bids, true);
+            charts[position].series[1].setData(data.asks, true);
+            charts[position].series[2].setData(data.values, true);
+            charts[position].series[3].setData(data.last_trade_value, true);
+
+            //setTimeout(getPubData, 60000, option_name_position);
+            //setTimeout(getPubData, 10000000000, option_name_position);
+		},
+		cache: false
+    });
+}
+
+
+var charts = [];
+
+$(document).ready(function () {
+
+    var getChartConfig = function(renderId, title, strikes, bids, asks, lastvalues, published_vols, position) {
+        var config = {};
+        config.chart = {
+            renderTo: renderId,
+            animation: Highcharts.svg//, // don't animate in old IE
+            //events: {
+            //    load: getPubData(title + "|||" + position)
+			//}
+        };
+        config.exporting = {
+            buttons : {
+                contextButtons: {
+                    enabled: false,
+                    menuItems: null
+                }
+            },
+            enabled: false
+        };
+        config.title = {
+            text: '',
+            x: -20 //center
+        };
+        config.subtitle = {
+            text: '',
+            x: -20
+        };
+        config.xAxis = {
+            categories: strikes,
+            title: {text: "Strike"},
+            tickmarkPlacement: 'on'
+        };
+        config.yAxis = {
+            title: {
+                text: 'Vol'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        };
+        config.tooltip = {
+            valueSuffix: ''
+        };
+        config.legend = {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        };
+        config.series = [{
+            name: 'Bids',
+            data: bids,
+            lineWidth : 0
+        }, {
+            name: 'Asks',
+            data: asks,
+            lineWidth : 0
+        }, {
+            name: 'Last Trade',
+            data: lastvalues,
+            lineWidth : 0
+        }, {
+            name: 'Offer',
+            data: published_vols
+        }];
+        return config;
+    };
+
+    
+    {% if containsdata %}
+        {% for future, optiondefs in futuredict.items %}
+            {% for option, data in optiondefs.items %}
+                {% if data.published %}
+                    charts.push(new Highcharts.Chart(
+                    getChartConfig("{{option.name}}", "{{option.name}}", {{data.strikes}}, {{data.bid_vols}}, {{data.ask_vols}}, {{data.last_trade_vols}}, {{data.published_vols}}, {{data.counter}})
+                    ))
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+});
+
+		</script>
+    <script src="{{STATIC_URL}}highcharts/js/highcharts.js"></script>
+    <script src="{{STATIC_URL}}highcharts/js/draggable-points.js"></script>
+    <script src="{{STATIC_URL}}highcharts/js/modules/exporting.js"></script>
+
+<script type="text/javascript">
+    function postShowing() {
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/index.html");
+    
+        var options = document.getElementsByName("option");
+    
+        for (var i = 0; i < options.length; i++){
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", options[i].id);
+            hiddenField.setAttribute("value", true);
+            form.appendChild(hiddenField);
+        }
+    
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+
+<script type="text/javascript">
+    function postShowing2Prices() {
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/prices.html");
+    
+        var options = document.getElementsByName("option");
+    
+        for (var i = 0; i < options.length; i++){
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", options[i].id);
+            hiddenField.setAttribute("value", true);
+            form.appendChild(hiddenField);
+        }
+    
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+
+<!-- Fixed navbar -->
+<div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a onclick="return postShowing();">Selection</a></li>
+        <li><a onclick="return postShowing2Prices();">Prices</a></li>
+        <li class="active"><a>Skews</a></li>
+        <!--<li><a href="/admin/">Admin</a></li>-->
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</div>
+
+
+<script src="{{STATIC_URL}}highcharts/js/highcharts.js"></script>
+<script src="{{STATIC_URL}}highcharts/js/modules/exporting.js"></script>
+
+<div class="container theme-showcase">
+
+    {% if containsdata %}
+        {% for future, optiondefs in futuredict.items %}
+            <div class="col-sm-12">
+                {% for option, data in optiondefs.items %}
+                    <div class="row">
+                        <div class="col-sm-12"> 
+                            <div class="panel panel-success">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">{{option.name}}, Underlying: {{future.name}}, Current Bid: {{future.bid}}</h3>
+                                </div>
+                                <div class="panel-body">
+                                    {% if data.published %}
+                                        <div name="option" id="{{option.name}}" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
+                                    {% else %}
+                                        <div class="well text-center">
+                                            <h2>
+                                                No published data
+                                            </h2>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="jumbotron">
+          <h1>No Prices Selected.</h1>
+        </div>
+    {% endif %}
+
+</div> <!-- /container -->
+
+{% endblock %}

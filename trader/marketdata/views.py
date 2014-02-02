@@ -396,6 +396,10 @@ def refresh_option(request, option_name):
     
             # calc vols and deltas
             bid_vols = [hf.black_pricer_vol(time2expiry, future.bid, K, Val, call) for K, Val, call in zip(strikes, bids, callbool)]
+
+            #print "refresh_option bids ..."
+            #print bid_vols
+
             bid_delta = [hf.black_delta(time2expiry, future.bid, K, vol, call) for K, vol, call in zip(strikes, bid_vols, callbool)]
     
             # always future.bid. Why? you can't hedge against a price future price that don't exist, so we don't use the value. We 
