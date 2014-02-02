@@ -173,6 +173,30 @@ $(document).ready(function () {
 </script>
 
 
+<script>
+    function refresh() {
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", "/skews.html");
+
+    var options = document.getElementsByName("option");
+
+    for (var i = 0; i < options.length; i++){
+        var hiddenField = document.createElement("input");
+        hiddenField.setAttribute("type", "hidden");
+        hiddenField.setAttribute("name", options[i].id);
+        hiddenField.setAttribute("value", true);
+        form.appendChild(hiddenField);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+
+    }
+    setTimeout(refresh, 120000);
+</script>
+
+
 <!-- Fixed navbar -->
 <div class="navbar navbar-inverse navbar-fixed-top">
   <div class="container">
