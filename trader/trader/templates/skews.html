@@ -4,6 +4,16 @@
 {% endblock %}
 {% block content %}  
 
+$(document).ready(function () {
+    var titles = document.getElementsByName("skew-title");
+    var now = new Date();
+    var nowstr = now.format("Y-m-d H:i");
+    for (var t = 0; t < titles.length; t++) {
+        titles[t].innerHTML = titles[t].innerHTML + nowstr;
+    }
+});
+
+
 function getPubData(option_name_position) {
 
     // NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE 
@@ -232,7 +242,7 @@ $(document).ready(function () {
                         <div class="col-sm-12"> 
                             <div class="panel panel-success">
                                 <div class="panel-heading">
-                                    <h3 class="panel-title">{{option.name}}, Underlying: {{future.name}}, Current Bid: {{future.bid}}</h3>
+                                    <h3 class="panel-title" name="skew-title">{{option.name}}, Underlying: {{future.name}}, Bid Price: {{future.bid}} @ </h3>
                                 </div>
                                 <div class="panel-body">
                                     {% if data.published %}
