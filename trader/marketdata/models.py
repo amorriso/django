@@ -15,7 +15,7 @@ class Future(models.Model):
     last_trade_value = models.FloatField(default = -99)
     last_updated = models.DateTimeField(default = datetime.datetime(1900,1,1,0,0,0))
     last_trade_volume = models.FloatField(default = -99)
-    month_tag = models.CharField(max_length=200)
+    month_tag = models.CharField(max_length=200, default = 'NA')
     # should we rename expiry_date as effective_date?
     expiry_date = models.DateTimeField(default = datetime.datetime(1900,1,1,0,0,0))
 
@@ -28,7 +28,7 @@ class OptionDefinition(models.Model):
     future = models.ForeignKey(Future)
     bloomberg_prefix = models.CharField(max_length=200, default = 'BLOOM')
     easyscreen_prefix = models.CharField(max_length=200)
-    month_tag = models.CharField(max_length=200)
+    month_tag = models.CharField(max_length=200, default = 'NA')
     expiry_date = models.DateTimeField()
     strike_interval = models.FloatField(default=0.5)
     price_movement = models.FloatField(default=0.01)
