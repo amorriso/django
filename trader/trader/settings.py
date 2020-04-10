@@ -19,7 +19,7 @@ LOGIN_URL = "/admin"
 sys.path.append(DJANGO_ROOT)
 ########## END PATH CONFIGURATION
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -35,8 +35,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'marketdata',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
-        'USER': 'test',
-        'PASSWORD': 'test',
+        'USER': 'root',
+        'PASSWORD': 'L4nf34r1',
         'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '',                      # Set to empty string for default.
     }
