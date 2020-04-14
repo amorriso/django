@@ -1,0 +1,145 @@
+{% extends "base-head.html" %}
+{% block title %}
+<title>Available Contracts</title>
+{% endblock %}
+
+
+  </head>
+
+<body>
+
+{% block content %}  
+<div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="active"><a>Selection</a></li>
+        <li><a onclick="return postSelection();">Prices</a></li>
+        <li><a onclick="return postSkewSelection();">Skews</a></li>
+        <!--<li><a href="/admin/">Admin</a></li>-->
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="container theme-showcase">
+    <div class="jumbotron">
+        <h1>Prices Selection</h1>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            {% if futuredict %}
+                {% for future, options in futuredict.items %}
+                    <div class="col-sm-4">
+                        <div class="panel panel-warning">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">{{future.name}}</h3>
+                            </div>
+                            <div class="panel-body">
+                                <table>            
+                                    <tr><td>Delivery Date:</td> <td>{{future.expiry_date}}</td></tr>
+                                    <tr><td>Current Bid Price:</td> <td>{{future.bid}}</td></tr>
+                                </table>        
+                                <br />
+                                {% for option in options %}
+                                <div class="well">
+                                    {% if option.1 %}
+                                        <input type="checkbox" id="{{option.0.name}}" name=option checked> {{option.0.name}}</input>
+                                    {% else %}
+                                        <input type="checkbox" id="{{option.0.name}}" name=option> {{option.0.name}}</input>
+                                    {% endif %}
+                                </div>                            
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>    
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="well text-center">
+                <input type="checkbox" id="everything"> Show me everything!</input>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    window.onload = function(){
+        var checkbox = document.getElementById("everything");
+        checkbox.onchange = function(){
+            var options = document.getElementsByName("option");
+            if (checkbox.checked == true){
+                for (var i = 0; i < options.length; i++){
+                    options[i].checked = true;
+                }
+            } else {
+                for (var i = 0; i < options.length; i++){
+                    options[i].checked = false;
+                }
+            }
+        };
+    };
+
+</script>
+<script type="text/javascript">
+    function postSelection() {
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/prices.html");
+    
+        var options = document.getElementsByName("option");
+    
+        for (var i = 0; i < options.length; i++){
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", options[i].id);
+            if (options[i].checked){
+                hiddenField.setAttribute("value", true);
+            } else {
+                hiddenField.setAttribute("value", false);
+            }
+            form.appendChild(hiddenField);
+        }
+    
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+<script type="text/javascript">
+    function postSkewSelection() {
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/skews.html");
+    
+        var options = document.getElementsByName("option");
+    
+        for (var i = 0; i < options.length; i++){
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", options[i].id);
+            if (options[i].checked){
+                hiddenField.setAttribute("value", true);
+            } else {
+                hiddenField.setAttribute("value", false);
+            }
+            form.appendChild(hiddenField);
+        }
+    
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+
+
+{% endblock %}

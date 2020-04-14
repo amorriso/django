@@ -1,0 +1,73 @@
+{% extends "marketdata/base.html" %}
+{% block content %}  
+<!-- Fixed navbar -->
+<div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Client Site</a>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="/marketdata/">Futures</a></li>
+        <li><a href="/marketdata/published-tables/">Published</a></li>
+        <li><a href="/admin/">Contract & Site Admin</a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</div>
+
+<div class="container theme-showcase">
+  {% if futuredict %}
+    {% for future, options in futuredict.items %}
+    <div class="col-sm-12">
+      <div class="panel panel-danger">
+        <div class="panel-heading">
+            <!--<h3 class="panel-title">{{future.name}} <a href="/admin/marketdata/future/{{ future.id }}/">[Edit]</a></h3>-->
+            <h3 class="panel-title">{{future.name}}</h3>
+        </div>
+        <div class="panel-body">
+            <div class="well">
+                <table>            
+                    <tr><td>Easy Screen ID:</td> <td>{{future.easyscreen_id}}</td></tr>
+                    <tr><td>Delivery Date:</td> <td>{{future.expiry_date}}</td></tr>
+                    <tr><td>Current Bid Price:</td> <td>{{future.bid}}</td></tr>
+                </table>        
+            </div>
+            <p />
+            {% for option in options %}
+            <div class="col-sm-4"> 
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <!--<h3 class="panel-title"><a href="/marketdata/option/{{ option.name }}">{{option.name}}</a> <a href="/admin/marketdata/optiondefinition/{{ option.id }}/">[Edit]</a></h3>-->
+                        <h3 class="panel-title"><a href="/marketdata/option/{{ option.name }}">{{option.name}}</a></h3>
+                    </div>
+                    <div class="panel-body">
+                        <table>            
+                            <tr><td>Month Tag:</td> <td>{{option.month_tag}}</td></tr>
+                            <tr><td>Easy Screen Prefix:</td> <td>{{option.easyscreen_prefix}}</td></tr>
+                            <tr><td>Expiry Date:</td> <td>{{option.expiry_date}}</td></tr>
+                        </table>        
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+      </div>
+    </div>
+      {% for option in options %}
+      {% endfor %}
+    {% endfor %}
+    {% else %}
+    <div class="jumbotron">
+      <h1>No futures to Display.</h1>
+    </div>
+  {% endif %}
+
+</div> <!-- /container -->
+{% endblock %}
+

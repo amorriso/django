@@ -1,0 +1,52 @@
+{% extends "marketdata/highchartsbase.html" %}
+{% block title %}
+<title>Option: {{ option.name }} </title>
+{% endblock %}
+{% block content %}  
+
+		</script>
+	</head>
+	<body>
+
+<!-- Fixed navbar -->
+<div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Client Site</a>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="/marketdata/">Futures</a></li>
+        <li><a href="/marketdata/published-tables/">Published</a></li>
+        <li><a href="/admin/">Contract & Site Admin</a></li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</div>
+
+<div class="container theme-showcase">
+    <div class="row">
+        <div class="container">
+            <div class="row">    
+                <div class="well text-center">
+                    <h2>
+                        No prices have been collected on this option series. Do you need to restart the EES data fetcher?
+                    </h2>
+                </div>
+            </div>
+        </div>    
+    </div>
+</div>
+
+	</body>
+</html>
+
+
+
+{% endblock %}
+
