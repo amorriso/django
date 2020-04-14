@@ -1,12 +1,16 @@
-from django.db import models
+import os
+import sys
+sys.path.append('..')
 import datetime
+from django.db import models
 
 # Create your models here.
 
 class Future(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
     bloomberg_id = models.CharField(max_length=200, default = 'BLOOM')
     easyscreen_id = models.CharField(max_length=200)
+    barchart_id = models.CharField(max_length=200)
     bid = models.FloatField(default = -99) 
     bid_volume = models.FloatField(default = -99) 
     ask = models.FloatField(default = -99) 
@@ -23,24 +27,43 @@ class Future(models.Model):
         return self.name
 
 
+    def save(self, *args, **kwargs):
+
+        if not self.easyscreen_id:
+            self.easyscreen_id = self.barchart_id
+
+        super(Future, self).save(*args, **kwargs)
+
+
+
+
 class OptionDefinition(models.Model):
     name = models.CharField(max_length=200)
     future = models.ForeignKey(Future)
     bloomberg_prefix = models.CharField(max_length=200, default = 'BLOOM')
-    easyscreen_prefix = models.CharField(max_length=200)
     month_tag = models.CharField(max_length=200, default = 'NA')
     expiry_date = models.DateTimeField()
     strike_interval = models.FloatField(default=0.5)
     price_movement = models.FloatField(default=0.01)
     number_of_OTM_options = models.IntegerField(default=10, verbose_name="No. of options")
 
+
     def __unicode__(self):
         return self.name + ', based on: ' + str(self.future)
 
 
+    def save(self, *args, **kwargs):
+
+        if not self.month_tag:
+            self.month_tag = self.expiry_date.strftime('%b').upper()
+
+        super(OptionDefinition, self).save(*args, **kwargs)
+
+
+
 class OptionContract(models.Model):
     optiondefinition = models.ForeignKey(OptionDefinition)
-    easy_screen_mnemonic = models.CharField(max_length=200)
+    easy_screen_mnemonic = models.CharField(max_length=200, unique=True)
     bloomberg_name = models.CharField(max_length=200, default = 'BLOOM')
     strike = models.FloatField(default = -99) 
     bid = models.FloatField(default = -99) 

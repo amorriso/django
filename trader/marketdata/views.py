@@ -36,6 +36,7 @@ def index(request):
     context = RequestContext(request, {
         'futuredict': futuredict,
     })
+
     return HttpResponse(template.render(context))
 
 @login_required
