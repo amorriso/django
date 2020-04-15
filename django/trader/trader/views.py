@@ -18,12 +18,7 @@ def home(request):
 
     selected_options = set(request.POST.keys())
 
-    futures = sorted(
-            Future.objects.all() ,
-            key = lambda x : x.name)
-    
-    futures = [el for el in futures 
-            if el.expiry_date > datetime.datetime.today()]
+    futures = Future.objects.filter(expiry_date__gte = datetime.datetime.now()).order_by('expiry_date', 'name')
 
     published_options = sorted(
             #PublishOptionContract.objects.filter(optiondefinition_id=option.id),
@@ -78,12 +73,7 @@ def prices(request):
         for o in published_options:
             published_option_definitions.add(o.optiondefinition)
     
-        futures = sorted(
-                Future.objects.all() ,
-                key = lambda x : x.name)
-    
-        futures = [el for el in futures 
-                if el.expiry_date > datetime.datetime.today()]
+        futures = Future.objects.filter(expiry_date__gte = datetime.datetime.now()).order_by('expiry_date', 'name')
     
         option_definitions = OptionDefinition.objects.all() 
 
@@ -219,12 +209,7 @@ def skews(request):
         for o in published_options:
             published_option_definitions.add(o.optiondefinition)
     
-        futures = sorted(
-                Future.objects.all() ,
-                key = lambda x : x.name)
-    
-        futures = [el for el in futures 
-                if el.expiry_date > datetime.datetime.today()]
+        futures = Future.objects.filter(expiry_date__gte = datetime.datetime.now()).order_by('expiry_date', 'name')
     
         option_definitions = OptionDefinition.objects.all() 
 

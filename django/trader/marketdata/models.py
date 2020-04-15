@@ -29,7 +29,7 @@ class Future(models.Model):
 
     def save(self, *args, **kwargs):
 
-        if not self.easyscreen_id:
+        if self.easyscreen_id != self.barchart_id:
             self.easyscreen_id = self.barchart_id
 
         super(Future, self).save(*args, **kwargs)

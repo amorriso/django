@@ -16,12 +16,7 @@ from marketdata.models import *
 @login_required
 def index(request):
 
-    futures = sorted(
-            Future.objects.all() ,
-            key = lambda x : x.name)
-    
-    futures = [el for el in futures 
-            if el.expiry_date > datetime.datetime.today()]
+    futures = Future.objects.filter(expiry_date__gte = datetime.datetime.now()).order_by('expiry_date', 'name')
 
     options = OptionDefinition.objects.all() 
     options =  [el for el in options 
@@ -43,7 +38,7 @@ def index(request):
 def detail(request, future):
 
     try:
-        futures = Future.objects.all()
+        futures = Future.objects.filter(expiry_date__gte = datetime.datetime.now()).order_by('expiry_date', 'name')
         future = [i for i in futures if i.name == future][0]
 
     except:
@@ -57,7 +52,6 @@ def published(request):
 
     try:
         published_options = sorted(
-                #PublishOptionContract.objects.filter(optiondefinition_id=option.id),
                 PublishOptionContract.objects.all(),
                 key = lambda x : x.strike)
     
@@ -65,12 +59,7 @@ def published(request):
         for o in published_options:
             published_option_definitions.add(o.optiondefinition)
     
-        futures = sorted(
-                Future.objects.all() ,
-                key = lambda x : x.name)
-    
-        futures = [el for el in futures 
-                if el.expiry_date > datetime.datetime.today()]
+        futures = Future.objects.filter(expiry_date__gte = datetime.datetime.now()).order_by('expiry_date', 'name')
     
         option_definitions = OptionDefinition.objects.all() 
         option_definitions =  [el for el in option_definitions
@@ -352,8 +341,6 @@ def publish_table(request, option_name):
                                             }), mimetype="application/json" )
 
     except Exception as e:
-        import pdb
-        pdb.set_trace()
         return HttpResponse(json.dumps({ 
                                         'Success': False, 
                                         }), mimetype="application/json" )
